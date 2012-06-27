@@ -1,0 +1,1952 @@
+State 7 conflicts: 1 shift/reduce
+State 19 conflicts: 1 shift/reduce
+State 22 conflicts: 1 shift/reduce
+State 68 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: programa $end
+
+    1 programa: programa_1 TOKEN_PONTO_VIRGULA corpo TOKEN_PONTO_FINAL
+    2         | programa_1 TOKEN_PONTO_VIRGULA corpo
+
+    3 programa_1: PROGRAM TOKEN_IDENTIFICADOR
+    4           | error
+
+    5 corpo: dc corpo_1 comandos corpo_2
+
+    6 corpo_1: BEGN
+    7        | error
+
+    8 corpo_2: END
+    9        | error
+
+   10 dc: dc_c dc_v dc_p
+
+   11 $@1: /* empty */
+
+   12 dc: error TOKEN_PONTO_VIRGULA $@1 dc
+
+   13 dc_c: CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c
+
+   14 $@2: /* empty */
+
+   15 dc_c: CONST error TOKEN_PONTO_VIRGULA $@2 dc_c
+   16     | /* empty */
+
+   17 dc_v: VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v
+
+   18 $@3: /* empty */
+
+   19 dc_v: VAR error TOKEN_PONTO_VIRGULA $@3 dc_v
+   20     | /* empty */
+
+   21 tipo_var: REAL
+   22         | INTEGER
+
+   23 variaveis: TOKEN_IDENTIFICADOR mais_var
+
+   24 mais_var: TOKEN_VIRGULA variaveis
+   25         | /* empty */
+
+   26 dc_p: PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dc_p
+   27     | /* empty */
+
+   28 parametros: TOKEN_ABRE_PAR lista_par TOKEN_FECHA_PAR
+   29           | /* empty */
+
+   30 lista_par: variaveis TOKEN_DOIS_PONTOS tipo_var mais_par
+
+   31 mais_par: TOKEN_PONTO_VIRGULA lista_par
+   32         | /* empty */
+
+   33 corpo_p: dc_loc BEGN comandos END TOKEN_PONTO_VIRGULA
+
+   34 dc_loc: dc_v
+
+   35 lista_arg: TOKEN_ABRE_PAR argumentos TOKEN_FECHA_PAR
+   36          | /* empty */
+
+   37 argumentos: TOKEN_IDENTIFICADOR mais_ident
+
+   38 mais_ident: TOKEN_PONTO_VIRGULA argumentos
+   39           | /* empty */
+
+   40 comandos: cmd TOKEN_PONTO_VIRGULA comandos
+   41         | /* empty */
+
+   42 cmd: matched
+   43    | unmatched
+
+   44 matched: other_stmt
+   45        | IF condicao THEN matched ELSE matched
+
+   46 unmatched: IF condicao THEN cmd
+   47          | IF condicao THEN matched ELSE unmatched
+
+   48 other_stmt: READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | REPEAT comandos UNTIL condicao
+   51           | WHILE condicao DO other_stmt
+   52           | TOKEN_IDENTIFICADOR cmd_linha
+   53           | BEGN comandos END
+   54           | error
+   55           | /* empty */
+
+   56 cmd_linha: TOKEN_ATRIBUICAO expressao
+   57          | lista_arg
+
+   58 condicao: expressao relacao expressao
+
+   59 relacao: TOKEN_IGUAL
+   60        | TOKEN_DIFERENTE
+   61        | TOKEN_MENOR_IGUAL
+   62        | TOKEN_MAIOR_IGUAL
+   63        | TOKEN_MENOR
+   64        | TOKEN_MAIOR
+
+   65 expressao: termo
+   66          | expressao op_termo termo
+
+   67 termo: fator
+   68      | termo op_fator fator
+
+   69 fator: op_un operando
+   70      | TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+
+   71 op_un: TOKEN_SOMA
+   72      | TOKEN_SUB
+   73      | /* empty */
+
+   74 op_termo: TOKEN_SOMA
+   75         | TOKEN_SUB
+
+   76 op_fator: TOKEN_MUL
+   77         | TOKEN_DIV
+
+   78 operando: numero
+   79         | TOKEN_IDENTIFICADOR
+
+   80 numero: TOKEN_LITERAL_INTEIRO
+   81       | TOKEN_LITERAL_REAL
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256) 4 7 9 12 15 19 54
+PROGRAM (258) 3
+BEGN (259) 6 33 53
+END (260) 8 33 53
+VAR (261) 17 19
+INTEGER (262) 22
+CONST (263) 13 15
+REAL (264) 21
+PROCEDURE (265) 26
+ELSE (266) 45 47
+READLN (267) 48
+WRITELN (268) 49
+REPEAT (269) 50
+UNTIL (270) 50
+IF (271) 45 46 47
+THEN (272) 45 46 47
+WHILE (273) 51
+DO (274) 51
+TOKEN_ATRIBUICAO (275) 13 56
+TOKEN_IGUAL (276) 59
+TOKEN_DIFERENTE (277) 60
+TOKEN_MAIOR_IGUAL (278) 62
+TOKEN_MENOR_IGUAL (279) 61
+TOKEN_MAIOR (280) 64
+TOKEN_MENOR (281) 63
+TOKEN_SOMA (282) 71 74
+TOKEN_SUB (283) 72 75
+TOKEN_MUL (284) 76
+TOKEN_DIV (285) 77
+TOKEN_ABRE_PAR (286) 28 35 48 49 70
+TOKEN_FECHA_PAR (287) 28 35 48 49 70
+TOKEN_VIRGULA (288) 24
+TOKEN_PONTO_VIRGULA (289) 1 2 12 13 15 17 19 26 31 33 38 40
+TOKEN_DOIS_PONTOS (290) 17 30
+TOKEN_PONTO_FINAL (291) 1
+TOKEN_IDENTIFICADOR (292) 3 13 23 26 37 52 79
+TOKEN_LITERAL_INTEIRO (293) 80
+TOKEN_LITERAL_REAL (294) 81
+
+
+Nonterminals, with rules where they appear
+
+$accept (40)
+    on left: 0
+programa (41)
+    on left: 1 2, on right: 0
+programa_1 (42)
+    on left: 3 4, on right: 1 2
+corpo (43)
+    on left: 5, on right: 1 2
+corpo_1 (44)
+    on left: 6 7, on right: 5
+corpo_2 (45)
+    on left: 8 9, on right: 5
+dc (46)
+    on left: 10 12, on right: 5 12
+$@1 (47)
+    on left: 11, on right: 12
+dc_c (48)
+    on left: 13 15 16, on right: 10 13 15
+$@2 (49)
+    on left: 14, on right: 15
+dc_v (50)
+    on left: 17 19 20, on right: 10 17 19 34
+$@3 (51)
+    on left: 18, on right: 19
+tipo_var (52)
+    on left: 21 22, on right: 17 30
+variaveis (53)
+    on left: 23, on right: 17 24 30 48 49
+mais_var (54)
+    on left: 24 25, on right: 23
+dc_p (55)
+    on left: 26 27, on right: 10 26
+parametros (56)
+    on left: 28 29, on right: 26
+lista_par (57)
+    on left: 30, on right: 28 31
+mais_par (58)
+    on left: 31 32, on right: 30
+corpo_p (59)
+    on left: 33, on right: 26
+dc_loc (60)
+    on left: 34, on right: 33
+lista_arg (61)
+    on left: 35 36, on right: 57
+argumentos (62)
+    on left: 37, on right: 35 38
+mais_ident (63)
+    on left: 38 39, on right: 37
+comandos (64)
+    on left: 40 41, on right: 5 33 40 50 53
+cmd (65)
+    on left: 42 43, on right: 40 46
+matched (66)
+    on left: 44 45, on right: 42 45 47
+unmatched (67)
+    on left: 46 47, on right: 43 47
+other_stmt (68)
+    on left: 48 49 50 51 52 53 54 55, on right: 44 51
+cmd_linha (69)
+    on left: 56 57, on right: 52
+condicao (70)
+    on left: 58, on right: 45 46 47 50 51
+relacao (71)
+    on left: 59 60 61 62 63 64, on right: 58
+expressao (72)
+    on left: 65 66, on right: 56 58 66 70
+termo (73)
+    on left: 67 68, on right: 65 66 68
+fator (74)
+    on left: 69 70, on right: 67 68
+op_un (75)
+    on left: 71 72 73, on right: 69
+op_termo (76)
+    on left: 74 75, on right: 66
+op_fator (77)
+    on left: 76 77, on right: 68
+operando (78)
+    on left: 78 79, on right: 69
+numero (79)
+    on left: 80 81, on right: 13 78
+
+
+state 0
+
+    0 $accept: . programa $end
+    1 programa: . programa_1 TOKEN_PONTO_VIRGULA corpo TOKEN_PONTO_FINAL
+    2         | . programa_1 TOKEN_PONTO_VIRGULA corpo
+    3 programa_1: . PROGRAM TOKEN_IDENTIFICADOR
+    4           | . error
+
+    error    shift, and go to state 1
+    PROGRAM  shift, and go to state 2
+
+    programa    go to state 3
+    programa_1  go to state 4
+
+
+state 1
+
+    4 programa_1: error .
+
+    $default  reduce using rule 4 (programa_1)
+
+
+state 2
+
+    3 programa_1: PROGRAM . TOKEN_IDENTIFICADOR
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 5
+
+
+state 3
+
+    0 $accept: programa . $end
+
+    $end  shift, and go to state 6
+
+
+state 4
+
+    1 programa: programa_1 . TOKEN_PONTO_VIRGULA corpo TOKEN_PONTO_FINAL
+    2         | programa_1 . TOKEN_PONTO_VIRGULA corpo
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 7
+
+
+state 5
+
+    3 programa_1: PROGRAM TOKEN_IDENTIFICADOR .
+
+    $default  reduce using rule 3 (programa_1)
+
+
+state 6
+
+    0 $accept: programa $end .
+
+    $default  accept
+
+
+state 7
+
+    1 programa: programa_1 TOKEN_PONTO_VIRGULA . corpo TOKEN_PONTO_FINAL
+    2         | programa_1 TOKEN_PONTO_VIRGULA . corpo
+    5 corpo: . dc corpo_1 comandos corpo_2
+   10 dc: . dc_c dc_v dc_p
+   12   | . error TOKEN_PONTO_VIRGULA $@1 dc
+   13 dc_c: . CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c
+   15     | . CONST error TOKEN_PONTO_VIRGULA $@2 dc_c
+   16     | .  [error, BEGN, VAR, PROCEDURE]
+
+    error  shift, and go to state 8
+    CONST  shift, and go to state 9
+
+    error      [reduce using rule 16 (dc_c)]
+    BEGN       reduce using rule 16 (dc_c)
+    VAR        reduce using rule 16 (dc_c)
+    PROCEDURE  reduce using rule 16 (dc_c)
+
+    corpo  go to state 10
+    dc     go to state 11
+    dc_c   go to state 12
+
+
+state 8
+
+   12 dc: error . TOKEN_PONTO_VIRGULA $@1 dc
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 13
+
+
+state 9
+
+   13 dc_c: CONST . TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c
+   15     | CONST . error TOKEN_PONTO_VIRGULA $@2 dc_c
+
+    error                shift, and go to state 14
+    TOKEN_IDENTIFICADOR  shift, and go to state 15
+
+
+state 10
+
+    1 programa: programa_1 TOKEN_PONTO_VIRGULA corpo . TOKEN_PONTO_FINAL
+    2         | programa_1 TOKEN_PONTO_VIRGULA corpo .  [$end]
+
+    TOKEN_PONTO_FINAL  shift, and go to state 16
+
+    $default  reduce using rule 2 (programa)
+
+
+state 11
+
+    5 corpo: dc . corpo_1 comandos corpo_2
+    6 corpo_1: . BEGN
+    7        | . error
+
+    error  shift, and go to state 17
+    BEGN   shift, and go to state 18
+
+    corpo_1  go to state 19
+
+
+state 12
+
+   10 dc: dc_c . dc_v dc_p
+   17 dc_v: . VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v
+   19     | . VAR error TOKEN_PONTO_VIRGULA $@3 dc_v
+   20     | .  [error, BEGN, PROCEDURE]
+
+    VAR  shift, and go to state 20
+
+    $default  reduce using rule 20 (dc_v)
+
+    dc_v  go to state 21
+
+
+state 13
+
+   11 $@1: .
+   12 dc: error TOKEN_PONTO_VIRGULA . $@1 dc
+
+    $default  reduce using rule 11 ($@1)
+
+    $@1  go to state 22
+
+
+state 14
+
+   15 dc_c: CONST error . TOKEN_PONTO_VIRGULA $@2 dc_c
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 23
+
+
+state 15
+
+   13 dc_c: CONST TOKEN_IDENTIFICADOR . TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c
+
+    TOKEN_ATRIBUICAO  shift, and go to state 24
+
+
+state 16
+
+    1 programa: programa_1 TOKEN_PONTO_VIRGULA corpo TOKEN_PONTO_FINAL .
+
+    $default  reduce using rule 1 (programa)
+
+
+state 17
+
+    7 corpo_1: error .
+
+    $default  reduce using rule 7 (corpo_1)
+
+
+state 18
+
+    6 corpo_1: BEGN .
+
+    $default  reduce using rule 6 (corpo_1)
+
+
+state 19
+
+    5 corpo: dc corpo_1 . comandos corpo_2
+   40 comandos: . cmd TOKEN_PONTO_VIRGULA comandos
+   41         | .  [error, END]
+   42 cmd: . matched
+   43    | . unmatched
+   44 matched: . other_stmt
+   45        | . IF condicao THEN matched ELSE matched
+   46 unmatched: . IF condicao THEN cmd
+   47          | . IF condicao THEN matched ELSE unmatched
+   48 other_stmt: . READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | . WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | . REPEAT comandos UNTIL condicao
+   51           | . WHILE condicao DO other_stmt
+   52           | . TOKEN_IDENTIFICADOR cmd_linha
+   53           | . BEGN comandos END
+   54           | . error
+   55           | .  [TOKEN_PONTO_VIRGULA]
+
+    error                shift, and go to state 25
+    BEGN                 shift, and go to state 26
+    READLN               shift, and go to state 27
+    WRITELN              shift, and go to state 28
+    REPEAT               shift, and go to state 29
+    IF                   shift, and go to state 30
+    WHILE                shift, and go to state 31
+    TOKEN_IDENTIFICADOR  shift, and go to state 32
+
+    error                [reduce using rule 41 (comandos)]
+    END                  reduce using rule 41 (comandos)
+    TOKEN_PONTO_VIRGULA  reduce using rule 55 (other_stmt)
+
+    comandos    go to state 33
+    cmd         go to state 34
+    matched     go to state 35
+    unmatched   go to state 36
+    other_stmt  go to state 37
+
+
+state 20
+
+   17 dc_v: VAR . variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v
+   19     | VAR . error TOKEN_PONTO_VIRGULA $@3 dc_v
+   23 variaveis: . TOKEN_IDENTIFICADOR mais_var
+
+    error                shift, and go to state 38
+    TOKEN_IDENTIFICADOR  shift, and go to state 39
+
+    variaveis  go to state 40
+
+
+state 21
+
+   10 dc: dc_c dc_v . dc_p
+   26 dc_p: . PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dc_p
+   27     | .  [error, BEGN]
+
+    PROCEDURE  shift, and go to state 41
+
+    $default  reduce using rule 27 (dc_p)
+
+    dc_p  go to state 42
+
+
+state 22
+
+   10 dc: . dc_c dc_v dc_p
+   12   | . error TOKEN_PONTO_VIRGULA $@1 dc
+   12   | error TOKEN_PONTO_VIRGULA $@1 . dc
+   13 dc_c: . CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c
+   15     | . CONST error TOKEN_PONTO_VIRGULA $@2 dc_c
+   16     | .  [error, BEGN, VAR, PROCEDURE]
+
+    error  shift, and go to state 8
+    CONST  shift, and go to state 9
+
+    error      [reduce using rule 16 (dc_c)]
+    BEGN       reduce using rule 16 (dc_c)
+    VAR        reduce using rule 16 (dc_c)
+    PROCEDURE  reduce using rule 16 (dc_c)
+
+    dc    go to state 43
+    dc_c  go to state 12
+
+
+state 23
+
+   14 $@2: .
+   15 dc_c: CONST error TOKEN_PONTO_VIRGULA . $@2 dc_c
+
+    $default  reduce using rule 14 ($@2)
+
+    $@2  go to state 44
+
+
+state 24
+
+   13 dc_c: CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO . numero TOKEN_PONTO_VIRGULA dc_c
+   80 numero: . TOKEN_LITERAL_INTEIRO
+   81       | . TOKEN_LITERAL_REAL
+
+    TOKEN_LITERAL_INTEIRO  shift, and go to state 45
+    TOKEN_LITERAL_REAL     shift, and go to state 46
+
+    numero  go to state 47
+
+
+state 25
+
+   54 other_stmt: error .
+
+    $default  reduce using rule 54 (other_stmt)
+
+
+state 26
+
+   40 comandos: . cmd TOKEN_PONTO_VIRGULA comandos
+   41         | .  [END]
+   42 cmd: . matched
+   43    | . unmatched
+   44 matched: . other_stmt
+   45        | . IF condicao THEN matched ELSE matched
+   46 unmatched: . IF condicao THEN cmd
+   47          | . IF condicao THEN matched ELSE unmatched
+   48 other_stmt: . READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | . WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | . REPEAT comandos UNTIL condicao
+   51           | . WHILE condicao DO other_stmt
+   52           | . TOKEN_IDENTIFICADOR cmd_linha
+   53           | . BEGN comandos END
+   53           | BEGN . comandos END
+   54           | . error
+   55           | .  [TOKEN_PONTO_VIRGULA]
+
+    error                shift, and go to state 25
+    BEGN                 shift, and go to state 26
+    READLN               shift, and go to state 27
+    WRITELN              shift, and go to state 28
+    REPEAT               shift, and go to state 29
+    IF                   shift, and go to state 30
+    WHILE                shift, and go to state 31
+    TOKEN_IDENTIFICADOR  shift, and go to state 32
+
+    END                  reduce using rule 41 (comandos)
+    TOKEN_PONTO_VIRGULA  reduce using rule 55 (other_stmt)
+
+    comandos    go to state 48
+    cmd         go to state 34
+    matched     go to state 35
+    unmatched   go to state 36
+    other_stmt  go to state 37
+
+
+state 27
+
+   48 other_stmt: READLN . TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+
+    TOKEN_ABRE_PAR  shift, and go to state 49
+
+
+state 28
+
+   49 other_stmt: WRITELN . TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+
+    TOKEN_ABRE_PAR  shift, and go to state 50
+
+
+state 29
+
+   40 comandos: . cmd TOKEN_PONTO_VIRGULA comandos
+   41         | .  [UNTIL]
+   42 cmd: . matched
+   43    | . unmatched
+   44 matched: . other_stmt
+   45        | . IF condicao THEN matched ELSE matched
+   46 unmatched: . IF condicao THEN cmd
+   47          | . IF condicao THEN matched ELSE unmatched
+   48 other_stmt: . READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | . WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | . REPEAT comandos UNTIL condicao
+   50           | REPEAT . comandos UNTIL condicao
+   51           | . WHILE condicao DO other_stmt
+   52           | . TOKEN_IDENTIFICADOR cmd_linha
+   53           | . BEGN comandos END
+   54           | . error
+   55           | .  [TOKEN_PONTO_VIRGULA]
+
+    error                shift, and go to state 25
+    BEGN                 shift, and go to state 26
+    READLN               shift, and go to state 27
+    WRITELN              shift, and go to state 28
+    REPEAT               shift, and go to state 29
+    IF                   shift, and go to state 30
+    WHILE                shift, and go to state 31
+    TOKEN_IDENTIFICADOR  shift, and go to state 32
+
+    UNTIL                reduce using rule 41 (comandos)
+    TOKEN_PONTO_VIRGULA  reduce using rule 55 (other_stmt)
+
+    comandos    go to state 51
+    cmd         go to state 34
+    matched     go to state 35
+    unmatched   go to state 36
+    other_stmt  go to state 37
+
+
+state 30
+
+   45 matched: IF . condicao THEN matched ELSE matched
+   46 unmatched: IF . condicao THEN cmd
+   47          | IF . condicao THEN matched ELSE unmatched
+   58 condicao: . expressao relacao expressao
+   65 expressao: . termo
+   66          | . expressao op_termo termo
+   67 termo: . fator
+   68      | . termo op_fator fator
+   69 fator: . op_un operando
+   70      | . TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+   71 op_un: . TOKEN_SOMA
+   72      | . TOKEN_SUB
+   73      | .  [TOKEN_IDENTIFICADOR, TOKEN_LITERAL_INTEIRO, TOKEN_LITERAL_REAL]
+
+    TOKEN_SOMA      shift, and go to state 52
+    TOKEN_SUB       shift, and go to state 53
+    TOKEN_ABRE_PAR  shift, and go to state 54
+
+    $default  reduce using rule 73 (op_un)
+
+    condicao   go to state 55
+    expressao  go to state 56
+    termo      go to state 57
+    fator      go to state 58
+    op_un      go to state 59
+
+
+state 31
+
+   51 other_stmt: WHILE . condicao DO other_stmt
+   58 condicao: . expressao relacao expressao
+   65 expressao: . termo
+   66          | . expressao op_termo termo
+   67 termo: . fator
+   68      | . termo op_fator fator
+   69 fator: . op_un operando
+   70      | . TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+   71 op_un: . TOKEN_SOMA
+   72      | . TOKEN_SUB
+   73      | .  [TOKEN_IDENTIFICADOR, TOKEN_LITERAL_INTEIRO, TOKEN_LITERAL_REAL]
+
+    TOKEN_SOMA      shift, and go to state 52
+    TOKEN_SUB       shift, and go to state 53
+    TOKEN_ABRE_PAR  shift, and go to state 54
+
+    $default  reduce using rule 73 (op_un)
+
+    condicao   go to state 60
+    expressao  go to state 56
+    termo      go to state 57
+    fator      go to state 58
+    op_un      go to state 59
+
+
+state 32
+
+   35 lista_arg: . TOKEN_ABRE_PAR argumentos TOKEN_FECHA_PAR
+   36          | .  [ELSE, TOKEN_PONTO_VIRGULA]
+   52 other_stmt: TOKEN_IDENTIFICADOR . cmd_linha
+   56 cmd_linha: . TOKEN_ATRIBUICAO expressao
+   57          | . lista_arg
+
+    TOKEN_ATRIBUICAO  shift, and go to state 61
+    TOKEN_ABRE_PAR    shift, and go to state 62
+
+    $default  reduce using rule 36 (lista_arg)
+
+    lista_arg  go to state 63
+    cmd_linha  go to state 64
+
+
+state 33
+
+    5 corpo: dc corpo_1 comandos . corpo_2
+    8 corpo_2: . END
+    9        | . error
+
+    error  shift, and go to state 65
+    END    shift, and go to state 66
+
+    corpo_2  go to state 67
+
+
+state 34
+
+   40 comandos: cmd . TOKEN_PONTO_VIRGULA comandos
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 68
+
+
+state 35
+
+   42 cmd: matched .
+
+    $default  reduce using rule 42 (cmd)
+
+
+state 36
+
+   43 cmd: unmatched .
+
+    $default  reduce using rule 43 (cmd)
+
+
+state 37
+
+   44 matched: other_stmt .
+
+    $default  reduce using rule 44 (matched)
+
+
+state 38
+
+   19 dc_v: VAR error . TOKEN_PONTO_VIRGULA $@3 dc_v
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 69
+
+
+state 39
+
+   23 variaveis: TOKEN_IDENTIFICADOR . mais_var
+   24 mais_var: . TOKEN_VIRGULA variaveis
+   25         | .  [TOKEN_FECHA_PAR, TOKEN_DOIS_PONTOS]
+
+    TOKEN_VIRGULA  shift, and go to state 70
+
+    $default  reduce using rule 25 (mais_var)
+
+    mais_var  go to state 71
+
+
+state 40
+
+   17 dc_v: VAR variaveis . TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v
+
+    TOKEN_DOIS_PONTOS  shift, and go to state 72
+
+
+state 41
+
+   26 dc_p: PROCEDURE . TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dc_p
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 73
+
+
+state 42
+
+   10 dc: dc_c dc_v dc_p .
+
+    $default  reduce using rule 10 (dc)
+
+
+state 43
+
+   12 dc: error TOKEN_PONTO_VIRGULA $@1 dc .
+
+    $default  reduce using rule 12 (dc)
+
+
+state 44
+
+   13 dc_c: . CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c
+   15     | . CONST error TOKEN_PONTO_VIRGULA $@2 dc_c
+   15     | CONST error TOKEN_PONTO_VIRGULA $@2 . dc_c
+   16     | .  [error, BEGN, VAR, PROCEDURE]
+
+    CONST  shift, and go to state 9
+
+    $default  reduce using rule 16 (dc_c)
+
+    dc_c  go to state 74
+
+
+state 45
+
+   80 numero: TOKEN_LITERAL_INTEIRO .
+
+    $default  reduce using rule 80 (numero)
+
+
+state 46
+
+   81 numero: TOKEN_LITERAL_REAL .
+
+    $default  reduce using rule 81 (numero)
+
+
+state 47
+
+   13 dc_c: CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero . TOKEN_PONTO_VIRGULA dc_c
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 75
+
+
+state 48
+
+   53 other_stmt: BEGN comandos . END
+
+    END  shift, and go to state 76
+
+
+state 49
+
+   23 variaveis: . TOKEN_IDENTIFICADOR mais_var
+   48 other_stmt: READLN TOKEN_ABRE_PAR . variaveis TOKEN_FECHA_PAR
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 39
+
+    variaveis  go to state 77
+
+
+state 50
+
+   23 variaveis: . TOKEN_IDENTIFICADOR mais_var
+   49 other_stmt: WRITELN TOKEN_ABRE_PAR . variaveis TOKEN_FECHA_PAR
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 39
+
+    variaveis  go to state 78
+
+
+state 51
+
+   50 other_stmt: REPEAT comandos . UNTIL condicao
+
+    UNTIL  shift, and go to state 79
+
+
+state 52
+
+   71 op_un: TOKEN_SOMA .
+
+    $default  reduce using rule 71 (op_un)
+
+
+state 53
+
+   72 op_un: TOKEN_SUB .
+
+    $default  reduce using rule 72 (op_un)
+
+
+state 54
+
+   65 expressao: . termo
+   66          | . expressao op_termo termo
+   67 termo: . fator
+   68      | . termo op_fator fator
+   69 fator: . op_un operando
+   70      | . TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+   70      | TOKEN_ABRE_PAR . expressao TOKEN_FECHA_PAR
+   71 op_un: . TOKEN_SOMA
+   72      | . TOKEN_SUB
+   73      | .  [TOKEN_IDENTIFICADOR, TOKEN_LITERAL_INTEIRO, TOKEN_LITERAL_REAL]
+
+    TOKEN_SOMA      shift, and go to state 52
+    TOKEN_SUB       shift, and go to state 53
+    TOKEN_ABRE_PAR  shift, and go to state 54
+
+    $default  reduce using rule 73 (op_un)
+
+    expressao  go to state 80
+    termo      go to state 57
+    fator      go to state 58
+    op_un      go to state 59
+
+
+state 55
+
+   45 matched: IF condicao . THEN matched ELSE matched
+   46 unmatched: IF condicao . THEN cmd
+   47          | IF condicao . THEN matched ELSE unmatched
+
+    THEN  shift, and go to state 81
+
+
+state 56
+
+   58 condicao: expressao . relacao expressao
+   59 relacao: . TOKEN_IGUAL
+   60        | . TOKEN_DIFERENTE
+   61        | . TOKEN_MENOR_IGUAL
+   62        | . TOKEN_MAIOR_IGUAL
+   63        | . TOKEN_MENOR
+   64        | . TOKEN_MAIOR
+   66 expressao: expressao . op_termo termo
+   74 op_termo: . TOKEN_SOMA
+   75         | . TOKEN_SUB
+
+    TOKEN_IGUAL        shift, and go to state 82
+    TOKEN_DIFERENTE    shift, and go to state 83
+    TOKEN_MAIOR_IGUAL  shift, and go to state 84
+    TOKEN_MENOR_IGUAL  shift, and go to state 85
+    TOKEN_MAIOR        shift, and go to state 86
+    TOKEN_MENOR        shift, and go to state 87
+    TOKEN_SOMA         shift, and go to state 88
+    TOKEN_SUB          shift, and go to state 89
+
+    relacao   go to state 90
+    op_termo  go to state 91
+
+
+state 57
+
+   65 expressao: termo .  [ELSE, THEN, DO, TOKEN_IGUAL, TOKEN_DIFERENTE, TOKEN_MAIOR_IGUAL, TOKEN_MENOR_IGUAL, TOKEN_MAIOR, TOKEN_MENOR, TOKEN_SOMA, TOKEN_SUB, TOKEN_FECHA_PAR, TOKEN_PONTO_VIRGULA]
+   68 termo: termo . op_fator fator
+   76 op_fator: . TOKEN_MUL
+   77         | . TOKEN_DIV
+
+    TOKEN_MUL  shift, and go to state 92
+    TOKEN_DIV  shift, and go to state 93
+
+    $default  reduce using rule 65 (expressao)
+
+    op_fator  go to state 94
+
+
+state 58
+
+   67 termo: fator .
+
+    $default  reduce using rule 67 (termo)
+
+
+state 59
+
+   69 fator: op_un . operando
+   78 operando: . numero
+   79         | . TOKEN_IDENTIFICADOR
+   80 numero: . TOKEN_LITERAL_INTEIRO
+   81       | . TOKEN_LITERAL_REAL
+
+    TOKEN_IDENTIFICADOR    shift, and go to state 95
+    TOKEN_LITERAL_INTEIRO  shift, and go to state 45
+    TOKEN_LITERAL_REAL     shift, and go to state 46
+
+    operando  go to state 96
+    numero    go to state 97
+
+
+state 60
+
+   51 other_stmt: WHILE condicao . DO other_stmt
+
+    DO  shift, and go to state 98
+
+
+state 61
+
+   56 cmd_linha: TOKEN_ATRIBUICAO . expressao
+   65 expressao: . termo
+   66          | . expressao op_termo termo
+   67 termo: . fator
+   68      | . termo op_fator fator
+   69 fator: . op_un operando
+   70      | . TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+   71 op_un: . TOKEN_SOMA
+   72      | . TOKEN_SUB
+   73      | .  [TOKEN_IDENTIFICADOR, TOKEN_LITERAL_INTEIRO, TOKEN_LITERAL_REAL]
+
+    TOKEN_SOMA      shift, and go to state 52
+    TOKEN_SUB       shift, and go to state 53
+    TOKEN_ABRE_PAR  shift, and go to state 54
+
+    $default  reduce using rule 73 (op_un)
+
+    expressao  go to state 99
+    termo      go to state 57
+    fator      go to state 58
+    op_un      go to state 59
+
+
+state 62
+
+   35 lista_arg: TOKEN_ABRE_PAR . argumentos TOKEN_FECHA_PAR
+   37 argumentos: . TOKEN_IDENTIFICADOR mais_ident
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 100
+
+    argumentos  go to state 101
+
+
+state 63
+
+   57 cmd_linha: lista_arg .
+
+    $default  reduce using rule 57 (cmd_linha)
+
+
+state 64
+
+   52 other_stmt: TOKEN_IDENTIFICADOR cmd_linha .
+
+    $default  reduce using rule 52 (other_stmt)
+
+
+state 65
+
+    9 corpo_2: error .
+
+    $default  reduce using rule 9 (corpo_2)
+
+
+state 66
+
+    8 corpo_2: END .
+
+    $default  reduce using rule 8 (corpo_2)
+
+
+state 67
+
+    5 corpo: dc corpo_1 comandos corpo_2 .
+
+    $default  reduce using rule 5 (corpo)
+
+
+state 68
+
+   40 comandos: . cmd TOKEN_PONTO_VIRGULA comandos
+   40         | cmd TOKEN_PONTO_VIRGULA . comandos
+   41         | .  [error, END, UNTIL]
+   42 cmd: . matched
+   43    | . unmatched
+   44 matched: . other_stmt
+   45        | . IF condicao THEN matched ELSE matched
+   46 unmatched: . IF condicao THEN cmd
+   47          | . IF condicao THEN matched ELSE unmatched
+   48 other_stmt: . READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | . WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | . REPEAT comandos UNTIL condicao
+   51           | . WHILE condicao DO other_stmt
+   52           | . TOKEN_IDENTIFICADOR cmd_linha
+   53           | . BEGN comandos END
+   54           | . error
+   55           | .  [TOKEN_PONTO_VIRGULA]
+
+    error                shift, and go to state 25
+    BEGN                 shift, and go to state 26
+    READLN               shift, and go to state 27
+    WRITELN              shift, and go to state 28
+    REPEAT               shift, and go to state 29
+    IF                   shift, and go to state 30
+    WHILE                shift, and go to state 31
+    TOKEN_IDENTIFICADOR  shift, and go to state 32
+
+    error                [reduce using rule 41 (comandos)]
+    END                  reduce using rule 41 (comandos)
+    UNTIL                reduce using rule 41 (comandos)
+    TOKEN_PONTO_VIRGULA  reduce using rule 55 (other_stmt)
+
+    comandos    go to state 102
+    cmd         go to state 34
+    matched     go to state 35
+    unmatched   go to state 36
+    other_stmt  go to state 37
+
+
+state 69
+
+   18 $@3: .
+   19 dc_v: VAR error TOKEN_PONTO_VIRGULA . $@3 dc_v
+
+    $default  reduce using rule 18 ($@3)
+
+    $@3  go to state 103
+
+
+state 70
+
+   23 variaveis: . TOKEN_IDENTIFICADOR mais_var
+   24 mais_var: TOKEN_VIRGULA . variaveis
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 39
+
+    variaveis  go to state 104
+
+
+state 71
+
+   23 variaveis: TOKEN_IDENTIFICADOR mais_var .
+
+    $default  reduce using rule 23 (variaveis)
+
+
+state 72
+
+   17 dc_v: VAR variaveis TOKEN_DOIS_PONTOS . tipo_var TOKEN_PONTO_VIRGULA dc_v
+   21 tipo_var: . REAL
+   22         | . INTEGER
+
+    INTEGER  shift, and go to state 105
+    REAL     shift, and go to state 106
+
+    tipo_var  go to state 107
+
+
+state 73
+
+   26 dc_p: PROCEDURE TOKEN_IDENTIFICADOR . parametros TOKEN_PONTO_VIRGULA corpo_p dc_p
+   28 parametros: . TOKEN_ABRE_PAR lista_par TOKEN_FECHA_PAR
+   29           | .  [TOKEN_PONTO_VIRGULA]
+
+    TOKEN_ABRE_PAR  shift, and go to state 108
+
+    $default  reduce using rule 29 (parametros)
+
+    parametros  go to state 109
+
+
+state 74
+
+   15 dc_c: CONST error TOKEN_PONTO_VIRGULA $@2 dc_c .
+
+    $default  reduce using rule 15 (dc_c)
+
+
+state 75
+
+   13 dc_c: . CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c
+   13     | CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA . dc_c
+   15     | . CONST error TOKEN_PONTO_VIRGULA $@2 dc_c
+   16     | .  [error, BEGN, VAR, PROCEDURE]
+
+    CONST  shift, and go to state 9
+
+    $default  reduce using rule 16 (dc_c)
+
+    dc_c  go to state 110
+
+
+state 76
+
+   53 other_stmt: BEGN comandos END .
+
+    $default  reduce using rule 53 (other_stmt)
+
+
+state 77
+
+   48 other_stmt: READLN TOKEN_ABRE_PAR variaveis . TOKEN_FECHA_PAR
+
+    TOKEN_FECHA_PAR  shift, and go to state 111
+
+
+state 78
+
+   49 other_stmt: WRITELN TOKEN_ABRE_PAR variaveis . TOKEN_FECHA_PAR
+
+    TOKEN_FECHA_PAR  shift, and go to state 112
+
+
+state 79
+
+   50 other_stmt: REPEAT comandos UNTIL . condicao
+   58 condicao: . expressao relacao expressao
+   65 expressao: . termo
+   66          | . expressao op_termo termo
+   67 termo: . fator
+   68      | . termo op_fator fator
+   69 fator: . op_un operando
+   70      | . TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+   71 op_un: . TOKEN_SOMA
+   72      | . TOKEN_SUB
+   73      | .  [TOKEN_IDENTIFICADOR, TOKEN_LITERAL_INTEIRO, TOKEN_LITERAL_REAL]
+
+    TOKEN_SOMA      shift, and go to state 52
+    TOKEN_SUB       shift, and go to state 53
+    TOKEN_ABRE_PAR  shift, and go to state 54
+
+    $default  reduce using rule 73 (op_un)
+
+    condicao   go to state 113
+    expressao  go to state 56
+    termo      go to state 57
+    fator      go to state 58
+    op_un      go to state 59
+
+
+state 80
+
+   66 expressao: expressao . op_termo termo
+   70 fator: TOKEN_ABRE_PAR expressao . TOKEN_FECHA_PAR
+   74 op_termo: . TOKEN_SOMA
+   75         | . TOKEN_SUB
+
+    TOKEN_SOMA       shift, and go to state 88
+    TOKEN_SUB        shift, and go to state 89
+    TOKEN_FECHA_PAR  shift, and go to state 114
+
+    op_termo  go to state 91
+
+
+state 81
+
+   42 cmd: . matched
+   43    | . unmatched
+   44 matched: . other_stmt
+   45        | . IF condicao THEN matched ELSE matched
+   45        | IF condicao THEN . matched ELSE matched
+   46 unmatched: . IF condicao THEN cmd
+   46          | IF condicao THEN . cmd
+   47          | . IF condicao THEN matched ELSE unmatched
+   47          | IF condicao THEN . matched ELSE unmatched
+   48 other_stmt: . READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | . WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | . REPEAT comandos UNTIL condicao
+   51           | . WHILE condicao DO other_stmt
+   52           | . TOKEN_IDENTIFICADOR cmd_linha
+   53           | . BEGN comandos END
+   54           | . error
+   55           | .  [ELSE, TOKEN_PONTO_VIRGULA]
+
+    error                shift, and go to state 25
+    BEGN                 shift, and go to state 26
+    READLN               shift, and go to state 27
+    WRITELN              shift, and go to state 28
+    REPEAT               shift, and go to state 29
+    IF                   shift, and go to state 30
+    WHILE                shift, and go to state 31
+    TOKEN_IDENTIFICADOR  shift, and go to state 32
+
+    ELSE                 reduce using rule 55 (other_stmt)
+    TOKEN_PONTO_VIRGULA  reduce using rule 55 (other_stmt)
+
+    cmd         go to state 115
+    matched     go to state 116
+    unmatched   go to state 36
+    other_stmt  go to state 37
+
+
+state 82
+
+   59 relacao: TOKEN_IGUAL .
+
+    $default  reduce using rule 59 (relacao)
+
+
+state 83
+
+   60 relacao: TOKEN_DIFERENTE .
+
+    $default  reduce using rule 60 (relacao)
+
+
+state 84
+
+   62 relacao: TOKEN_MAIOR_IGUAL .
+
+    $default  reduce using rule 62 (relacao)
+
+
+state 85
+
+   61 relacao: TOKEN_MENOR_IGUAL .
+
+    $default  reduce using rule 61 (relacao)
+
+
+state 86
+
+   64 relacao: TOKEN_MAIOR .
+
+    $default  reduce using rule 64 (relacao)
+
+
+state 87
+
+   63 relacao: TOKEN_MENOR .
+
+    $default  reduce using rule 63 (relacao)
+
+
+state 88
+
+   74 op_termo: TOKEN_SOMA .
+
+    $default  reduce using rule 74 (op_termo)
+
+
+state 89
+
+   75 op_termo: TOKEN_SUB .
+
+    $default  reduce using rule 75 (op_termo)
+
+
+state 90
+
+   58 condicao: expressao relacao . expressao
+   65 expressao: . termo
+   66          | . expressao op_termo termo
+   67 termo: . fator
+   68      | . termo op_fator fator
+   69 fator: . op_un operando
+   70      | . TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+   71 op_un: . TOKEN_SOMA
+   72      | . TOKEN_SUB
+   73      | .  [TOKEN_IDENTIFICADOR, TOKEN_LITERAL_INTEIRO, TOKEN_LITERAL_REAL]
+
+    TOKEN_SOMA      shift, and go to state 52
+    TOKEN_SUB       shift, and go to state 53
+    TOKEN_ABRE_PAR  shift, and go to state 54
+
+    $default  reduce using rule 73 (op_un)
+
+    expressao  go to state 117
+    termo      go to state 57
+    fator      go to state 58
+    op_un      go to state 59
+
+
+state 91
+
+   66 expressao: expressao op_termo . termo
+   67 termo: . fator
+   68      | . termo op_fator fator
+   69 fator: . op_un operando
+   70      | . TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+   71 op_un: . TOKEN_SOMA
+   72      | . TOKEN_SUB
+   73      | .  [TOKEN_IDENTIFICADOR, TOKEN_LITERAL_INTEIRO, TOKEN_LITERAL_REAL]
+
+    TOKEN_SOMA      shift, and go to state 52
+    TOKEN_SUB       shift, and go to state 53
+    TOKEN_ABRE_PAR  shift, and go to state 54
+
+    $default  reduce using rule 73 (op_un)
+
+    termo  go to state 118
+    fator  go to state 58
+    op_un  go to state 59
+
+
+state 92
+
+   76 op_fator: TOKEN_MUL .
+
+    $default  reduce using rule 76 (op_fator)
+
+
+state 93
+
+   77 op_fator: TOKEN_DIV .
+
+    $default  reduce using rule 77 (op_fator)
+
+
+state 94
+
+   68 termo: termo op_fator . fator
+   69 fator: . op_un operando
+   70      | . TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR
+   71 op_un: . TOKEN_SOMA
+   72      | . TOKEN_SUB
+   73      | .  [TOKEN_IDENTIFICADOR, TOKEN_LITERAL_INTEIRO, TOKEN_LITERAL_REAL]
+
+    TOKEN_SOMA      shift, and go to state 52
+    TOKEN_SUB       shift, and go to state 53
+    TOKEN_ABRE_PAR  shift, and go to state 54
+
+    $default  reduce using rule 73 (op_un)
+
+    fator  go to state 119
+    op_un  go to state 59
+
+
+state 95
+
+   79 operando: TOKEN_IDENTIFICADOR .
+
+    $default  reduce using rule 79 (operando)
+
+
+state 96
+
+   69 fator: op_un operando .
+
+    $default  reduce using rule 69 (fator)
+
+
+state 97
+
+   78 operando: numero .
+
+    $default  reduce using rule 78 (operando)
+
+
+state 98
+
+   48 other_stmt: . READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | . WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | . REPEAT comandos UNTIL condicao
+   51           | . WHILE condicao DO other_stmt
+   51           | WHILE condicao DO . other_stmt
+   52           | . TOKEN_IDENTIFICADOR cmd_linha
+   53           | . BEGN comandos END
+   54           | . error
+   55           | .  [ELSE, TOKEN_PONTO_VIRGULA]
+
+    error                shift, and go to state 25
+    BEGN                 shift, and go to state 26
+    READLN               shift, and go to state 27
+    WRITELN              shift, and go to state 28
+    REPEAT               shift, and go to state 29
+    WHILE                shift, and go to state 31
+    TOKEN_IDENTIFICADOR  shift, and go to state 32
+
+    ELSE                 reduce using rule 55 (other_stmt)
+    TOKEN_PONTO_VIRGULA  reduce using rule 55 (other_stmt)
+
+    other_stmt  go to state 120
+
+
+state 99
+
+   56 cmd_linha: TOKEN_ATRIBUICAO expressao .  [ELSE, TOKEN_PONTO_VIRGULA]
+   66 expressao: expressao . op_termo termo
+   74 op_termo: . TOKEN_SOMA
+   75         | . TOKEN_SUB
+
+    TOKEN_SOMA  shift, and go to state 88
+    TOKEN_SUB   shift, and go to state 89
+
+    $default  reduce using rule 56 (cmd_linha)
+
+    op_termo  go to state 91
+
+
+state 100
+
+   37 argumentos: TOKEN_IDENTIFICADOR . mais_ident
+   38 mais_ident: . TOKEN_PONTO_VIRGULA argumentos
+   39           | .  [TOKEN_FECHA_PAR]
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 121
+
+    $default  reduce using rule 39 (mais_ident)
+
+    mais_ident  go to state 122
+
+
+state 101
+
+   35 lista_arg: TOKEN_ABRE_PAR argumentos . TOKEN_FECHA_PAR
+
+    TOKEN_FECHA_PAR  shift, and go to state 123
+
+
+state 102
+
+   40 comandos: cmd TOKEN_PONTO_VIRGULA comandos .
+
+    $default  reduce using rule 40 (comandos)
+
+
+state 103
+
+   17 dc_v: . VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v
+   19     | . VAR error TOKEN_PONTO_VIRGULA $@3 dc_v
+   19     | VAR error TOKEN_PONTO_VIRGULA $@3 . dc_v
+   20     | .  [error, BEGN, PROCEDURE]
+
+    VAR  shift, and go to state 20
+
+    $default  reduce using rule 20 (dc_v)
+
+    dc_v  go to state 124
+
+
+state 104
+
+   24 mais_var: TOKEN_VIRGULA variaveis .
+
+    $default  reduce using rule 24 (mais_var)
+
+
+state 105
+
+   22 tipo_var: INTEGER .
+
+    $default  reduce using rule 22 (tipo_var)
+
+
+state 106
+
+   21 tipo_var: REAL .
+
+    $default  reduce using rule 21 (tipo_var)
+
+
+state 107
+
+   17 dc_v: VAR variaveis TOKEN_DOIS_PONTOS tipo_var . TOKEN_PONTO_VIRGULA dc_v
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 125
+
+
+state 108
+
+   23 variaveis: . TOKEN_IDENTIFICADOR mais_var
+   28 parametros: TOKEN_ABRE_PAR . lista_par TOKEN_FECHA_PAR
+   30 lista_par: . variaveis TOKEN_DOIS_PONTOS tipo_var mais_par
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 39
+
+    variaveis  go to state 126
+    lista_par  go to state 127
+
+
+state 109
+
+   26 dc_p: PROCEDURE TOKEN_IDENTIFICADOR parametros . TOKEN_PONTO_VIRGULA corpo_p dc_p
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 128
+
+
+state 110
+
+   13 dc_c: CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c .
+
+    $default  reduce using rule 13 (dc_c)
+
+
+state 111
+
+   48 other_stmt: READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR .
+
+    $default  reduce using rule 48 (other_stmt)
+
+
+state 112
+
+   49 other_stmt: WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR .
+
+    $default  reduce using rule 49 (other_stmt)
+
+
+state 113
+
+   50 other_stmt: REPEAT comandos UNTIL condicao .
+
+    $default  reduce using rule 50 (other_stmt)
+
+
+state 114
+
+   70 fator: TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR .
+
+    $default  reduce using rule 70 (fator)
+
+
+state 115
+
+   46 unmatched: IF condicao THEN cmd .
+
+    $default  reduce using rule 46 (unmatched)
+
+
+state 116
+
+   42 cmd: matched .  [TOKEN_PONTO_VIRGULA]
+   45 matched: IF condicao THEN matched . ELSE matched
+   47 unmatched: IF condicao THEN matched . ELSE unmatched
+
+    ELSE  shift, and go to state 129
+
+    $default  reduce using rule 42 (cmd)
+
+
+state 117
+
+   58 condicao: expressao relacao expressao .  [ELSE, THEN, DO, TOKEN_PONTO_VIRGULA]
+   66 expressao: expressao . op_termo termo
+   74 op_termo: . TOKEN_SOMA
+   75         | . TOKEN_SUB
+
+    TOKEN_SOMA  shift, and go to state 88
+    TOKEN_SUB   shift, and go to state 89
+
+    $default  reduce using rule 58 (condicao)
+
+    op_termo  go to state 91
+
+
+state 118
+
+   66 expressao: expressao op_termo termo .  [ELSE, THEN, DO, TOKEN_IGUAL, TOKEN_DIFERENTE, TOKEN_MAIOR_IGUAL, TOKEN_MENOR_IGUAL, TOKEN_MAIOR, TOKEN_MENOR, TOKEN_SOMA, TOKEN_SUB, TOKEN_FECHA_PAR, TOKEN_PONTO_VIRGULA]
+   68 termo: termo . op_fator fator
+   76 op_fator: . TOKEN_MUL
+   77         | . TOKEN_DIV
+
+    TOKEN_MUL  shift, and go to state 92
+    TOKEN_DIV  shift, and go to state 93
+
+    $default  reduce using rule 66 (expressao)
+
+    op_fator  go to state 94
+
+
+state 119
+
+   68 termo: termo op_fator fator .
+
+    $default  reduce using rule 68 (termo)
+
+
+state 120
+
+   51 other_stmt: WHILE condicao DO other_stmt .
+
+    $default  reduce using rule 51 (other_stmt)
+
+
+state 121
+
+   37 argumentos: . TOKEN_IDENTIFICADOR mais_ident
+   38 mais_ident: TOKEN_PONTO_VIRGULA . argumentos
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 100
+
+    argumentos  go to state 130
+
+
+state 122
+
+   37 argumentos: TOKEN_IDENTIFICADOR mais_ident .
+
+    $default  reduce using rule 37 (argumentos)
+
+
+state 123
+
+   35 lista_arg: TOKEN_ABRE_PAR argumentos TOKEN_FECHA_PAR .
+
+    $default  reduce using rule 35 (lista_arg)
+
+
+state 124
+
+   19 dc_v: VAR error TOKEN_PONTO_VIRGULA $@3 dc_v .
+
+    $default  reduce using rule 19 (dc_v)
+
+
+state 125
+
+   17 dc_v: . VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v
+   17     | VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA . dc_v
+   19     | . VAR error TOKEN_PONTO_VIRGULA $@3 dc_v
+   20     | .  [error, BEGN, PROCEDURE]
+
+    VAR  shift, and go to state 20
+
+    $default  reduce using rule 20 (dc_v)
+
+    dc_v  go to state 131
+
+
+state 126
+
+   30 lista_par: variaveis . TOKEN_DOIS_PONTOS tipo_var mais_par
+
+    TOKEN_DOIS_PONTOS  shift, and go to state 132
+
+
+state 127
+
+   28 parametros: TOKEN_ABRE_PAR lista_par . TOKEN_FECHA_PAR
+
+    TOKEN_FECHA_PAR  shift, and go to state 133
+
+
+state 128
+
+   17 dc_v: . VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v
+   19     | . VAR error TOKEN_PONTO_VIRGULA $@3 dc_v
+   20     | .  [BEGN]
+   26 dc_p: PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA . corpo_p dc_p
+   33 corpo_p: . dc_loc BEGN comandos END TOKEN_PONTO_VIRGULA
+   34 dc_loc: . dc_v
+
+    VAR  shift, and go to state 20
+
+    $default  reduce using rule 20 (dc_v)
+
+    dc_v     go to state 134
+    corpo_p  go to state 135
+    dc_loc   go to state 136
+
+
+state 129
+
+   44 matched: . other_stmt
+   45        | . IF condicao THEN matched ELSE matched
+   45        | IF condicao THEN matched ELSE . matched
+   46 unmatched: . IF condicao THEN cmd
+   47          | . IF condicao THEN matched ELSE unmatched
+   47          | IF condicao THEN matched ELSE . unmatched
+   48 other_stmt: . READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | . WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | . REPEAT comandos UNTIL condicao
+   51           | . WHILE condicao DO other_stmt
+   52           | . TOKEN_IDENTIFICADOR cmd_linha
+   53           | . BEGN comandos END
+   54           | . error
+   55           | .  [ELSE, TOKEN_PONTO_VIRGULA]
+
+    error                shift, and go to state 25
+    BEGN                 shift, and go to state 26
+    READLN               shift, and go to state 27
+    WRITELN              shift, and go to state 28
+    REPEAT               shift, and go to state 29
+    IF                   shift, and go to state 30
+    WHILE                shift, and go to state 31
+    TOKEN_IDENTIFICADOR  shift, and go to state 32
+
+    ELSE                 reduce using rule 55 (other_stmt)
+    TOKEN_PONTO_VIRGULA  reduce using rule 55 (other_stmt)
+
+    matched     go to state 137
+    unmatched   go to state 138
+    other_stmt  go to state 37
+
+
+state 130
+
+   38 mais_ident: TOKEN_PONTO_VIRGULA argumentos .
+
+    $default  reduce using rule 38 (mais_ident)
+
+
+state 131
+
+   17 dc_v: VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v .
+
+    $default  reduce using rule 17 (dc_v)
+
+
+state 132
+
+   21 tipo_var: . REAL
+   22         | . INTEGER
+   30 lista_par: variaveis TOKEN_DOIS_PONTOS . tipo_var mais_par
+
+    INTEGER  shift, and go to state 105
+    REAL     shift, and go to state 106
+
+    tipo_var  go to state 139
+
+
+state 133
+
+   28 parametros: TOKEN_ABRE_PAR lista_par TOKEN_FECHA_PAR .
+
+    $default  reduce using rule 28 (parametros)
+
+
+state 134
+
+   34 dc_loc: dc_v .
+
+    $default  reduce using rule 34 (dc_loc)
+
+
+state 135
+
+   26 dc_p: . PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dc_p
+   26     | PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p . dc_p
+   27     | .  [error, BEGN]
+
+    PROCEDURE  shift, and go to state 41
+
+    $default  reduce using rule 27 (dc_p)
+
+    dc_p  go to state 140
+
+
+state 136
+
+   33 corpo_p: dc_loc . BEGN comandos END TOKEN_PONTO_VIRGULA
+
+    BEGN  shift, and go to state 141
+
+
+state 137
+
+   45 matched: IF condicao THEN matched ELSE matched .
+
+    $default  reduce using rule 45 (matched)
+
+
+state 138
+
+   47 unmatched: IF condicao THEN matched ELSE unmatched .
+
+    $default  reduce using rule 47 (unmatched)
+
+
+state 139
+
+   30 lista_par: variaveis TOKEN_DOIS_PONTOS tipo_var . mais_par
+   31 mais_par: . TOKEN_PONTO_VIRGULA lista_par
+   32         | .  [TOKEN_FECHA_PAR]
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 142
+
+    $default  reduce using rule 32 (mais_par)
+
+    mais_par  go to state 143
+
+
+state 140
+
+   26 dc_p: PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dc_p .
+
+    $default  reduce using rule 26 (dc_p)
+
+
+state 141
+
+   33 corpo_p: dc_loc BEGN . comandos END TOKEN_PONTO_VIRGULA
+   40 comandos: . cmd TOKEN_PONTO_VIRGULA comandos
+   41         | .  [END]
+   42 cmd: . matched
+   43    | . unmatched
+   44 matched: . other_stmt
+   45        | . IF condicao THEN matched ELSE matched
+   46 unmatched: . IF condicao THEN cmd
+   47          | . IF condicao THEN matched ELSE unmatched
+   48 other_stmt: . READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   49           | . WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+   50           | . REPEAT comandos UNTIL condicao
+   51           | . WHILE condicao DO other_stmt
+   52           | . TOKEN_IDENTIFICADOR cmd_linha
+   53           | . BEGN comandos END
+   54           | . error
+   55           | .  [TOKEN_PONTO_VIRGULA]
+
+    error                shift, and go to state 25
+    BEGN                 shift, and go to state 26
+    READLN               shift, and go to state 27
+    WRITELN              shift, and go to state 28
+    REPEAT               shift, and go to state 29
+    IF                   shift, and go to state 30
+    WHILE                shift, and go to state 31
+    TOKEN_IDENTIFICADOR  shift, and go to state 32
+
+    END                  reduce using rule 41 (comandos)
+    TOKEN_PONTO_VIRGULA  reduce using rule 55 (other_stmt)
+
+    comandos    go to state 144
+    cmd         go to state 34
+    matched     go to state 35
+    unmatched   go to state 36
+    other_stmt  go to state 37
+
+
+state 142
+
+   23 variaveis: . TOKEN_IDENTIFICADOR mais_var
+   30 lista_par: . variaveis TOKEN_DOIS_PONTOS tipo_var mais_par
+   31 mais_par: TOKEN_PONTO_VIRGULA . lista_par
+
+    TOKEN_IDENTIFICADOR  shift, and go to state 39
+
+    variaveis  go to state 126
+    lista_par  go to state 145
+
+
+state 143
+
+   30 lista_par: variaveis TOKEN_DOIS_PONTOS tipo_var mais_par .
+
+    $default  reduce using rule 30 (lista_par)
+
+
+state 144
+
+   33 corpo_p: dc_loc BEGN comandos . END TOKEN_PONTO_VIRGULA
+
+    END  shift, and go to state 146
+
+
+state 145
+
+   31 mais_par: TOKEN_PONTO_VIRGULA lista_par .
+
+    $default  reduce using rule 31 (mais_par)
+
+
+state 146
+
+   33 corpo_p: dc_loc BEGN comandos END . TOKEN_PONTO_VIRGULA
+
+    TOKEN_PONTO_VIRGULA  shift, and go to state 147
+
+
+state 147
+
+   33 corpo_p: dc_loc BEGN comandos END TOKEN_PONTO_VIRGULA .
+
+    $default  reduce using rule 33 (corpo_p)

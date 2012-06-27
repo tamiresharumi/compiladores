@@ -1,0 +1,50 @@
+//enum token_id
+//{
+//	PROGRAM,
+//	BEGN,
+//	END,
+//	VAR,
+//	INTEGER,
+//	CONST,
+//	REAL,
+//	PROCEDURE,
+//	ELSE,
+//	READLN,
+//	WRITELN,
+//	REPEAT,
+//	UNTIL,
+//	IF,
+//	THEN,
+//	WHILE,
+//	DO,
+//	TOKEN_ATRIBUICAO,
+//	TOKEN_IGUAL,
+//	TOKEN_DIFERENTE,
+//	TOKEN_MAIOR_IGUAL,
+//	TOKEN_MENOR_IGUAL,
+//	TOKEN_MAIOR,
+//	TOKEN_MENOR,
+//	TOKEN_SOMA,
+//	TOKEN_SUB,
+//	TOKEN_MUL,
+//	TOKEN_DIV,
+//	TOKEN_ABRE_PAR,
+//	TOKEN_FECHA_PAR,
+//	TOKEN_VIRGULA,
+//	TOKEN_PONTO_VIRGULA,
+//	TOKEN_DOIS_PONTOS,
+//	TOKEN_PONTO_FINAL,
+//	TOKEN_IDENTIFICADOR,
+//	TOKEN_LITERAL_INTEIRO,
+//	TOKEN_LITERAL_REAL,
+//	TOKEN_ERRO
+//};
+//
+
+#include "sintatico.h"
+
+struct token {
+	const char *texto;
+	enum yytokentype id;
+};
+
