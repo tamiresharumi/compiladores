@@ -1,0 +1,24 @@
+%{
+#include "comum.h"
+#include <string.h>
+%}
+%define slot-name texto
+struct token;
+%%
+program, PROGRAM
+begin, BEGN
+end, END
+var, VAR
+integer, INTEGER
+const, CONST
+real, REAL
+procedure, PROCEDURE
+else, ELSE
+readln, READLN
+writeln, WRITELN
+repeat, REPEAT
+until, UNTIL
+if, IF
+then, THEN
+while, WHILE
+do, DO

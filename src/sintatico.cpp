@@ -66,7 +66,7 @@
 /* Copy the first part of user declarations.  */
 
 /* Line 268 of yacc.c  */
-#line 1 "sint.y"
+#line 1 "src/sint.y"
 
 	#define YYDEBUG 1
 	#include <stdio.h>
@@ -81,7 +81,7 @@
 
 
 /* Line 268 of yacc.c  */
-#line 85 "sintatico.cpp"
+#line 85 "src/sintatico.cpp"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -163,7 +163,7 @@ typedef union YYSTYPE
 {
 
 /* Line 295 of yacc.c  */
-#line 58 "sint.y"
+#line 58 "src/sint.y"
 
 	const char* texto;
 	float real;
@@ -172,7 +172,7 @@ typedef union YYSTYPE
 
 
 /* Line 295 of yacc.c  */
-#line 176 "sintatico.cpp"
+#line 176 "src/sintatico.cpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -197,7 +197,7 @@ typedef struct YYLTYPE
 
 
 /* Line 345 of yacc.c  */
-#line 201 "sintatico.cpp"
+#line 201 "src/sintatico.cpp"
 
 #ifdef short
 # undef short
@@ -1622,63 +1622,63 @@ yyreduce:
         case 3:
 
 /* Line 1810 of yacc.c  */
-#line 69 "sint.y"
+#line 69 "src/sint.y"
     {yynerrs++; yyerror("syntax error: missing '.'");}
     break;
 
   case 8:
 
 /* Line 1810 of yacc.c  */
-#line 80 "sint.y"
+#line 80 "src/sint.y"
     {yyerrok;}
     break;
 
   case 10:
 
 /* Line 1810 of yacc.c  */
-#line 84 "sint.y"
+#line 84 "src/sint.y"
     {yyerrok;}
     break;
 
   case 13:
 
 /* Line 1810 of yacc.c  */
-#line 91 "sint.y"
+#line 91 "src/sint.y"
     {yyerrok;}
     break;
 
   case 16:
 
 /* Line 1810 of yacc.c  */
-#line 96 "sint.y"
+#line 96 "src/sint.y"
     {yyerrok;}
     break;
 
   case 19:
 
 /* Line 1810 of yacc.c  */
-#line 101 "sint.y"
+#line 101 "src/sint.y"
     {yyerrok;}
     break;
 
   case 22:
 
 /* Line 1810 of yacc.c  */
-#line 106 "sint.y"
+#line 106 "src/sint.y"
     {yyerrok;}
     break;
 
   case 26:
 
 /* Line 1810 of yacc.c  */
-#line 112 "sint.y"
+#line 112 "src/sint.y"
     {yyerrok;}
     break;
 
 
 
 /* Line 1810 of yacc.c  */
-#line 1682 "sintatico.cpp"
+#line 1682 "src/sintatico.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1916,7 +1916,7 @@ yyreturn:
 
 
 /* Line 2071 of yacc.c  */
-#line 236 "sint.y"
+#line 236 "src/sint.y"
 
 
 /* The lexical analyzer returns a double floating point
