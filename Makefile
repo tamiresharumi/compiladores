@@ -16,10 +16,10 @@ clean:
 	rm -f sintatico.*
 	rm -f trabalho2
 
-lexico.cpp: src/main.lex src/comum.h
+src/lexico.cpp: src/main.lex src/comum.h
 	flex -o src/lexico.cpp src/main.lex
 
-tabela.cpp: src/palavrasreservadas src/comum.h src/sintatico.hpp
+src/tabela.cpp: src/palavrasreservadas src/comum.h src/sintatico.hpp
 	gperf --language=C++ -t --output-file=src/tabela.cpp src/palavrasreservadas
 
 src/sintatico.hpp src/sintatico.cpp: src/sint.y 

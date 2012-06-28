@@ -1,7 +1,7 @@
 %option yylineno
 
 %{
-#include "sintatico.hpp"
+#include "sintatico.h"
 #include "comum.h"
 #include <cstdlib>
 
@@ -11,7 +11,7 @@
 #define MAX_LALG_INT 2147483647LL
 #define INC { yylloc.first_column = yylloc.last_column + 1; yylloc.last_column += yyleng; }
 
-#define RETORNA_TOKEN(id_token) INC; yylval.texto = yytext; return id_token;
+#define RETORNA_TOKEN(id_token) INC; yylval.texto = strdup(yytext); return id_token;
 #define RETORNA_INTEIRO(texto) INC; yylval.inteiro = atoi(texto); return TOKEN_LITERAL_INTEIRO;
 #define RETORNA_REAL(texto) INC; yylval.real = atof(texto); return TOKEN_LITERAL_REAL;
 

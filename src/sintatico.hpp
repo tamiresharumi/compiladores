@@ -84,16 +84,17 @@ typedef union YYSTYPE
 {
 
 /* Line 2072 of yacc.c  */
-#line 58 "src/sint.y"
+#line 60 "src/sint.y"
 
 	const char* texto;
 	float real;
 	int inteiro;
+	simbolo_da_harumi_fofinha simb;
 
 
 
 /* Line 2072 of yacc.c  */
-#line 97 "src/sintatico.hpp"
+#line 98 "src/sintatico.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
