@@ -1,11 +1,14 @@
 %{
 	#define YYDEBUG 1
 	#include <stdio.h>
+	#include "tabsimb.h"
 	extern int yylexerrs;
 	int yyerrstatus;
 	int yylex();
 	int yyparse();
 	void yyerror (char const *);
+
+	tabela_simbolos tabsimb;
 %}
 
 %error-verbose
@@ -54,6 +57,8 @@
 
 %union{
 	const char* texto;
+	float real;
+	int inteiro;
 }
 
 %locations 

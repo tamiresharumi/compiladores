@@ -1,8 +1,9 @@
 %option yylineno
 
 %{
-#include "sintatico.h"
+#include "sintatico.hpp"
 #include "comum.h"
+#include <cstdlib>
 
 //#define YY_DECL struct token* yylex(void)
 
@@ -11,6 +12,8 @@
 #define INC { yylloc.first_column = yylloc.last_column + 1; yylloc.last_column += yyleng; }
 
 #define RETORNA_TOKEN(id_token) INC; yylval.texto = yytext; return id_token;
+#define RETORNA_INTEIRO(texto) INC; yylval.inteiro = atoi(texto); return TOKEN_LITERAL_INTEIRO;
+#define RETORNA_REAL(texto) INC; yylval.real = atof(texto); return TOKEN_LITERAL_REAL;
 
 struct token t;
 char token_id_buffer[0xff];
@@ -20,7 +23,15 @@ int linha_do_comentario;
 
 int colnum = 0;
 
-struct token* in_word_set(const char*, unsigned);
+class Perfect_Hash
+{
+public:
+  static struct token *in_word_set (const char *str, unsigned int len);
+};
+struct token* in_word_set(const char* str, unsigned len)
+{
+	return Perfect_Hash::in_word_set(str, len);
+}
 
 %}
 
@@ -103,10 +114,10 @@ WS      [ \t]+
                      }
                      else
                      {
-                         RETORNA_TOKEN(TOKEN_LITERAL_INTEIRO);
+                         RETORNA_INTEIRO(yytext);
                      }
 }
-{D}+"."{D}+        { RETORNA_TOKEN(TOKEN_LITERAL_REAL); }
+{D}+"."{D}+        { RETORNA_REAL(yytext); }
 
 {D}+{L}+"."{D}+    |
 {D}+"."{L}+{D}+    |

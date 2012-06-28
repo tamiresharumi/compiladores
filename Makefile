@@ -1,6 +1,15 @@
 LIBS = -lfl -lm
 
-all: bison flex junta
+OBJS = \
+	build/tabela.o \
+	build/lexico.o \
+	build/sintatico.o \
+	build/tabsimb.o
+
+EXEC = trabalho3
+
+all: $(EXEC)
+
 
 clean:
 	rm -f *.tab.*
@@ -8,13 +17,17 @@ clean:
 	rm -f sintatico.*
 	rm -f trabalho2
 
-flex: lexico.c
+lexico.cpp: main.lex comum.h
+	flex -o lexico.cpp main.lex
 
-lexico.c: main.lex comum.h
-	flex -o lexico.c main.lex
-	
-bison: sint.y 
-	bison -d --verbose --report=all -o sintatico.c sint.y
+tabela.cpp: palavrasreservadas comum.h sintatico.hpp
+	gperf --language=C++ -t --output-file=tabela.cpp palavrasreservadas
 
-junta: 
-	gcc tabela.c lexico.c sintatico.c -o trabalho3 $(LIBS)
+sintatico.hpp sintatico.cpp: sint.y 
+	bison -d --verbose --report=all -o sintatico.cpp sint.y
+
+build/%.o: %.cpp
+	g++ -c -o $@ $<
+
+$(EXEC) : $(OBJS)
+	g++ $(OBJS) -o $(EXEC) $(LIBS)

@@ -10,7 +10,7 @@ simbolo_da_harumi_fofinha::simbolo_da_harumi_fofinha()
 	valor.valori = -1;
 }
 
-simbolo_da_harumi_fofinha simbolo_variavel_da_harumi_fofinha(tipo_variavel_da_harumi_fofinha tipo);
+simbolo_da_harumi_fofinha simbolo_variavel_da_harumi_fofinha(tipo_variavel_da_harumi_fofinha tipo)
 {
 	simbolo_da_harumi_fofinha simb;
 	simb.categoria = CAT_VARIAVEL;
