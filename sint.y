@@ -228,8 +228,9 @@ void yyerror (char const *s)
 	fprintf (stderr,  "%s at line %d\n", s, yylloc.first_line);
 	
 	/* como boa parte das regras sincroniza com ';', descartamos o lookahead caso ele nao pareca util pra sincronizar 
-	if (yychar != TOKEN_PONTO_VIRGULA)
-		yyclearin; */
+	if (yychar != TOKEN_PONTO_VIRGULA) {
+		yyclearin;
+	}*/
 }
 
 int main(void)
