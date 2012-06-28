@@ -99,13 +99,13 @@ dcp_1:
 dc_c:
 		CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dcc_1
 	|	CONST error TOKEN_PONTO_VIRGULA {yyerrok;} 
-		dc_c
+		dcc_1
 	|
 	;
 dc_v:
 		VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dcv_1
 	| 	VAR error TOKEN_PONTO_VIRGULA {yyerrok;}
-		dc_v
+		dcv_1
 	|
 	;
 tipo_var:
@@ -121,6 +121,8 @@ mais_var:
 	;
 dc_p:
 		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dcp_1
+		PROCEDURE error TOKEN_PONTO_VIRGULA {yyerrok;}
+		dcp_1
 	|
 	;
 parametros:
