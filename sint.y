@@ -1,5 +1,5 @@
 %{
-	#define YYDEBUG 0
+	#define YYDEBUG 1
 	#include <stdio.h>
 	extern int yylexerrs;
 	int yyerrstatus;
@@ -79,18 +79,31 @@ corpo_2:
 	|	error {yyerrok;}
 	;
 dc:
-		dc_c dc_v dc_p 
+		dcc_1 dcv_1 dcp_1
+	;
+dcc_1:
+		dc_c
 	|	error TOKEN_PONTO_VIRGULA {yyerrok;}
-		dc  
+		dc_c
+	;
+dcv_1:
+		dc_v
+	|	error TOKEN_PONTO_VIRGULA {yyerrok;}
+		dc_v
+	;
+dcp_1:
+		dc_p
+	|	error TOKEN_PONTO_VIRGULA {yyerrok;}
+		dc_p
 	;
 dc_c:
-		CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dc_c
+		CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dcc_1
 	|	CONST error TOKEN_PONTO_VIRGULA {yyerrok;} 
 		dc_c
 	|
 	;
 dc_v:
-		VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dc_v
+		VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dcv_1
 	| 	VAR error TOKEN_PONTO_VIRGULA {yyerrok;}
 		dc_v
 	|
@@ -107,7 +120,7 @@ mais_var:
 	|
 	;
 dc_p:
-		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dc_p
+		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dcp_1
 	|
 	;
 parametros:
