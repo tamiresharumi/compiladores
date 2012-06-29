@@ -173,9 +173,13 @@ mais_ident:
 	|
 	;
 comandos:
-		cmd	TOKEN_PONTO_VIRGULA comandos 
+		comandos_1 TOKEN_PONTO_VIRGULA comandos 
 	|
 	;
+comandos_1:
+		cmd
+	|	error
+	;	
 /* resolvendo o conflito do if/else como no livro "flex & bison", do John Levine */
 cmd:
 		matched
@@ -196,7 +200,6 @@ other_stmt:
 	|	WHILE condicao DO other_stmt 
 	|	TOKEN_IDENTIFICADOR cmd_linha 
 	|	BEGN comandos END
-	| 	error
 	|
 	;
 cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
@@ -213,6 +216,7 @@ relacao:
 	|	TOKEN_MAIOR_IGUAL
 	|	TOKEN_MENOR
 	|	TOKEN_MAIOR
+	|	error 
 	;
 /* a precedência dos operadores faz parte da gramática, não há conflitos de
 shift/reduce nestas produções */
@@ -267,10 +271,6 @@ void yyerror (char const *s)
 {
 	fprintf (stderr,  "%s at line %d\n", s, yylloc.first_line);
 	
-	/* como boa parte das regras sincroniza com ';', descartamos o lookahead caso ele nao pareca util pra sincronizar 
-	if (yychar != TOKEN_PONTO_VIRGULA) {
-		yyclearin;
-	}*/
 }
 
 int main(void)

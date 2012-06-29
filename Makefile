@@ -11,9 +11,9 @@ EXEC = trabalho3
 all: $(EXEC)
 
 clean:
-	rm -f *.tab.*
 	rm -f lexico.c
-	rm -f sintatico.*
+	rm -f src/sintatico.hpp
+	rm -f src/sintatico.cpp
 	rm -f trabalho2
 
 src/lexico.cpp: src/main.lex src/comum.h
