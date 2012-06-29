@@ -1,6 +1,6 @@
 %{
 	#define YYDEBUG 0
-	#include <stdio.h>
+	#include <cstdio>
 	#include "tabsimb.h"
 	extern int yylexerrs;
 	int yysinterrs = 0;
@@ -119,7 +119,10 @@ dc_c:
 	|
 	;
 dc_v:
-		VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA dcv_1
+		VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA
+		{
+		}
+		dcv_1
 	| 	VAR error TOKEN_PONTO_VIRGULA {yyerrok;}
 		dcv_1
 	|
@@ -137,7 +140,7 @@ mais_var:
 	;
 dc_p:
 		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dcp_1
-		PROCEDURE error TOKEN_PONTO_VIRGULA {yyerrok;}
+	|	PROCEDURE error TOKEN_PONTO_VIRGULA {yyerrok;}
 		dcp_1
 	|
 	;
@@ -277,6 +280,6 @@ int main(void)
 	yydebug = 1;
 #endif
 	yyparse();
-	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs);
+	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs+yysinterrs);
 	tabsimb.imprime();
 }
