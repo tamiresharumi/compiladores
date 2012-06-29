@@ -41,7 +41,7 @@
 //};
 //
 
-#include "sintatico.hpp"
+#include "sintatico.h"
 
 struct token {
 	const char *texto;

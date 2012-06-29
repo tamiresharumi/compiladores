@@ -1,6 +1,6 @@
-#line 2 "lexico.cpp"
+#line 2 "src/lexico.cpp"
 
-#line 4 "lexico.cpp"
+#line 4 "src/lexico.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -494,9 +494,9 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "main.lex"
-#line 4 "main.lex"
-#include "sintatico.hpp"
+#line 1 "src/main.lex"
+#line 4 "src/main.lex"
+#include "sintatico.h"
 #include "comum.h"
 #include <cstdlib>
 
@@ -506,7 +506,7 @@ char *yytext;
 #define MAX_LALG_INT 2147483647LL
 #define INC { yylloc.first_column = yylloc.last_column + 1; yylloc.last_column += yyleng; }
 
-#define RETORNA_TOKEN(id_token) INC; yylval.texto = yytext; return id_token;
+#define RETORNA_TOKEN(id_token) INC; yylval.texto = strdup(yytext); return id_token;
 #define RETORNA_INTEIRO(texto) INC; yylval.inteiro = atoi(texto); return TOKEN_LITERAL_INTEIRO;
 #define RETORNA_REAL(texto) INC; yylval.real = atof(texto); return TOKEN_LITERAL_REAL;
 
@@ -529,7 +529,7 @@ struct token* in_word_set(const char* str, unsigned len)
 }
 
 
-#line 533 "lexico.cpp"
+#line 533 "src/lexico.cpp"
 
 #define INITIAL 0
 #define IN_COMMENT 1
@@ -712,10 +712,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 44 "main.lex"
+#line 44 "src/main.lex"
 
 
-#line 719 "lexico.cpp"
+#line 719 "src/lexico.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -810,7 +810,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 47 "main.lex"
+#line 47 "src/main.lex"
 {
 						linha_do_comentario = yylineno;
 						BEGIN(IN_COMMENT);
@@ -820,11 +820,11 @@ YY_RULE_SETUP
 
 case 2:
 YY_RULE_SETUP
-#line 55 "main.lex"
+#line 55 "src/main.lex"
 BEGIN(INITIAL);
 	YY_BREAK
 case YY_STATE_EOF(IN_COMMENT):
-#line 56 "main.lex"
+#line 56 "src/main.lex"
 {
 					erro_de_comentario = 1;
 					fprintf(stderr, "Comentario nao fechado na linha %d.\n", linha_do_comentario);
@@ -833,13 +833,13 @@ case YY_STATE_EOF(IN_COMMENT):
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 62 "main.lex"
+#line 62 "src/main.lex"
 /* tira do arquivo tudo o que não é } */
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 63 "main.lex"
+#line 63 "src/main.lex"
 {
 					yylloc.first_line = yylloc.last_line = yylineno;
 					yylloc.first_column = 1;
@@ -849,97 +849,97 @@ YY_RULE_SETUP
 
 case 5:
 YY_RULE_SETUP
-#line 69 "main.lex"
+#line 69 "src/main.lex"
 /*espaço em branco não faz nada*/
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 71 "main.lex"
+#line 71 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_ATRIBUICAO); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 72 "main.lex"
+#line 72 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_IGUAL); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 73 "main.lex"
+#line 73 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_DIFERENTE); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 74 "main.lex"
+#line 74 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_MAIOR_IGUAL); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 75 "main.lex"
+#line 75 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_MENOR_IGUAL); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 76 "main.lex"
+#line 76 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_MAIOR); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 77 "main.lex"
+#line 77 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_MENOR); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 78 "main.lex"
+#line 78 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_SOMA); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 79 "main.lex"
+#line 79 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_SUB); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 80 "main.lex"
+#line 80 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_MUL); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 81 "main.lex"
+#line 81 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_DIV); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 82 "main.lex"
+#line 82 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_ABRE_PAR); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 83 "main.lex"
+#line 83 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_FECHA_PAR); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 84 "main.lex"
+#line 84 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_VIRGULA); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 85 "main.lex"
+#line 85 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_PONTO_VIRGULA); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 86 "main.lex"
+#line 86 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_DOIS_PONTOS); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 87 "main.lex"
+#line 87 "src/main.lex"
 { RETORNA_TOKEN(TOKEN_PONTO_FINAL); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 88 "main.lex"
+#line 88 "src/main.lex"
 {
 					struct token *token_reservado;
                     if (yyleng > MAX_IDENT_LENGTH)
@@ -960,7 +960,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 105 "main.lex"
+#line 105 "src/main.lex"
 {
                      //verifica se o numero cabe no tamanho do inteiro
                      long long resultado;
@@ -979,18 +979,18 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 120 "main.lex"
+#line 120 "src/main.lex"
 { RETORNA_REAL(yytext); }
 	YY_BREAK
 case 26:
-#line 123 "main.lex"
+#line 123 "src/main.lex"
 case 27:
-#line 124 "main.lex"
+#line 124 "src/main.lex"
 case 28:
-#line 125 "main.lex"
+#line 125 "src/main.lex"
 case 29:
 YY_RULE_SETUP
-#line 125 "main.lex"
+#line 125 "src/main.lex"
 { 
                      fprintf(stderr, "numero real literal mal formado na linha %i\n", yylineno);
                      yylexerrs++;
@@ -1000,7 +1000,7 @@ YY_RULE_SETUP
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 130 "main.lex"
+#line 130 "src/main.lex"
 { 
 						yylloc.first_line = yylloc.last_line = yylineno;
 						yylloc.first_column = 1;
@@ -1009,7 +1009,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 135 "main.lex"
+#line 135 "src/main.lex"
 { 
                      fprintf(stderr, "caracter '%s' nao permitido na linha %i\n", yytext, yylineno);
                      yylexerrs++;
@@ -1017,10 +1017,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 140 "main.lex"
+#line 140 "src/main.lex"
 ECHO;
 	YY_BREAK
-#line 1024 "lexico.cpp"
+#line 1024 "src/lexico.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2030,7 +2030,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 140 "main.lex"
+#line 140 "src/main.lex"
 
 
 

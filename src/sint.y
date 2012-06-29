@@ -1,5 +1,5 @@
 %{
-	#define YYDEBUG 1
+	#define YYDEBUG 0
 	#include <stdio.h>
 	#include "tabsimb.h"
 	extern int yylexerrs;
@@ -48,17 +48,20 @@
 %token TOKEN_PONTO_VIRGULA
 %token TOKEN_DOIS_PONTOS
 %token TOKEN_PONTO_FINAL
-%token TOKEN_IDENTIFICADOR
-%token TOKEN_LITERAL_INTEIRO
-%token TOKEN_LITERAL_REAL
+%token <texto> TOKEN_IDENTIFICADOR
+%token <inteiro> TOKEN_LITERAL_INTEIRO
+%token <real> TOKEN_LITERAL_REAL
 
 %nonassoc THEN
 %nonassoc ELSE
+
+%type <simb> numero
 
 %union{
 	const char* texto;
 	float real;
 	int inteiro;
+	simbolo_da_harumi_fofinha simb;
 }
 
 %locations 
@@ -103,6 +106,9 @@ dcp_1:
 	;
 dc_c:
 		CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dcc_1
+		{
+			tabsimb.insere($2, $4);
+		}
 	|	CONST error TOKEN_PONTO_VIRGULA {yyerrok;} 
 		dcc_1
 	|
@@ -237,7 +243,13 @@ operando:
 	;
 numero:
 		TOKEN_LITERAL_INTEIRO
+		{
+			$$ = simbolo_constante_da_harumi_fofinha($1);
+		}
 	|	TOKEN_LITERAL_REAL
+		{
+			$$ = simbolo_constante_da_harumi_fofinha($1);
+		}
 	;
 %%
 
@@ -261,4 +273,5 @@ int main(void)
 #endif
 	yyparse();
 	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs);
+	tabsimb.imprime();
 }

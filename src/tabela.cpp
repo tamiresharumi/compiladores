@@ -1,5 +1,5 @@
 /* C++ code produced by gperf version 3.0.4 */
-/* Command-line: gperf --language=C++ -t --output-file=tabela.cpp palavrasreservadas  */
+/* Command-line: gperf --language=C++ -t --output-file=src/tabela.cpp src/palavrasreservadas  */
 /* Computed positions: -k'$' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -29,11 +29,11 @@
 #error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
 #endif
 
-#line 1 "palavrasreservadas"
+#line 1 "src/palavrasreservadas"
 
 #include "comum.h"
 #include <string.h>
-#line 6 "palavrasreservadas"
+#line 6 "src/palavrasreservadas"
 struct token;
 
 #define TOTAL_KEYWORDS 17
@@ -92,43 +92,43 @@ Perfect_Hash::in_word_set (register const char *str, register unsigned int len)
   static struct token wordlist[] =
     {
       {""}, {""},
-#line 24 "palavrasreservadas"
+#line 24 "src/palavrasreservadas"
       {"do", DO},
-#line 10 "palavrasreservadas"
+#line 10 "src/palavrasreservadas"
       {"end", END},
-#line 22 "palavrasreservadas"
+#line 22 "src/palavrasreservadas"
       {"then", THEN},
-#line 9 "palavrasreservadas"
+#line 9 "src/palavrasreservadas"
       {"begin", BEGN},
-#line 17 "palavrasreservadas"
+#line 17 "src/palavrasreservadas"
       {"readln", READLN},
-#line 18 "palavrasreservadas"
+#line 18 "src/palavrasreservadas"
       {"writeln", WRITELN},
-#line 11 "palavrasreservadas"
+#line 11 "src/palavrasreservadas"
       {"var", VAR},
-#line 16 "palavrasreservadas"
+#line 16 "src/palavrasreservadas"
       {"else", ELSE},
-#line 23 "palavrasreservadas"
+#line 23 "src/palavrasreservadas"
       {"while", WHILE},
       {""},
-#line 12 "palavrasreservadas"
+#line 12 "src/palavrasreservadas"
       {"integer", INTEGER},
       {""},
-#line 15 "palavrasreservadas"
+#line 15 "src/palavrasreservadas"
       {"procedure", PROCEDURE},
-#line 13 "palavrasreservadas"
+#line 13 "src/palavrasreservadas"
       {"const", CONST},
-#line 19 "palavrasreservadas"
+#line 19 "src/palavrasreservadas"
       {"repeat", REPEAT},
-#line 8 "palavrasreservadas"
+#line 8 "src/palavrasreservadas"
       {"program", PROGRAM},
       {""},
-#line 14 "palavrasreservadas"
+#line 14 "src/palavrasreservadas"
       {"real", REAL},
-#line 20 "palavrasreservadas"
+#line 20 "src/palavrasreservadas"
       {"until", UNTIL},
       {""},
-#line 21 "palavrasreservadas"
+#line 21 "src/palavrasreservadas"
       {"if", IF}
     };
 

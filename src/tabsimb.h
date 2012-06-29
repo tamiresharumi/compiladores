@@ -21,7 +21,6 @@ enum tipo_variavel_da_harumi_fofinha
 
 struct simbolo_da_harumi_fofinha
 {
-	simbolo_da_harumi_fofinha();
 
 	categoria_simbolo_da_harumi_fofinha categoria;
 	tipo_variavel_da_harumi_fofinha tipo;
@@ -35,6 +34,7 @@ struct simbolo_da_harumi_fofinha
 	} valor;
 };
 
+simbolo_da_harumi_fofinha simbolo_indefinido_da_harumi_fofinha();
 simbolo_da_harumi_fofinha simbolo_variavel_da_harumi_fofinha(tipo_variavel_da_harumi_fofinha categoria);
 simbolo_da_harumi_fofinha simbolo_constante_da_harumi_fofinha(int valor);
 simbolo_da_harumi_fofinha simbolo_constante_da_harumi_fofinha(float valor);
@@ -49,6 +49,8 @@ struct tabela_simbolos
 
 	bool busca(const std::string &nome, simbolo_da_harumi_fofinha &simb);
 	bool insere(const std::string &nome, simbolo_da_harumi_fofinha &simb);
+
+	void imprime();
 };
 
 #endif 
