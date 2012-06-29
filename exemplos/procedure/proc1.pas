@@ -4,6 +4,7 @@ program proc1;
 	const meuconstreal := 1.5;
 	var a : integer;
 	var b : integer;
+	var b : real;
 begin
 	a := 10;
 	b := 20;

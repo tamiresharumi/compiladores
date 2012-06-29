@@ -1,6 +1,7 @@
 %{
 	#define YYDEBUG 0
 	#include <cstdio>
+	#include <vector>
 	#include "tabsimb.h"
 	extern int yylexerrs;
 	int yysinterrs = 0;
@@ -9,6 +10,7 @@
 	void yyerror (char const *);
 
 	tabela_simbolos tabsimb;
+	std::vector<std::string> identificadores;
 %}
 
 %error-verbose
@@ -56,6 +58,7 @@
 %nonassoc ELSE
 
 %type <simb> numero
+%type <simb> tipo_var
 
 %union{
 	const char* texto;
@@ -119,8 +122,20 @@ dc_c:
 	|
 	;
 dc_v:
-		VAR variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA
+		
+		VAR 
+		{ identificadores.clear(); }
+		variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA
 		{
+			for (int i=0 ; i<identificadores.size() ; ++i)
+			{
+				if (!tabsimb.insere(identificadores[i], $5))
+				{
+					yysinterrs++;
+					printf("erro: variavel '%s' ja declarada na linha %i\n",
+						identificadores[i].c_str(), yylloc.first_line);
+				}
+			}
 		}
 		dcv_1
 	| 	VAR error TOKEN_PONTO_VIRGULA {yyerrok;}
@@ -129,10 +144,18 @@ dc_v:
 	;
 tipo_var:
 		REAL
+		{
+			$$ = simbolo_variavel_da_harumi_fofinha(TIPO_FLOAT);
+		}
 	|	INTEGER
+		{
+			$$ = simbolo_variavel_da_harumi_fofinha(TIPO_INT);
+		}
 	;
 variaveis:
-		TOKEN_IDENTIFICADOR mais_var
+		TOKEN_IDENTIFICADOR
+		{ identificadores.push_back($1); }
+		mais_var
 	;
 mais_var:
 		TOKEN_VIRGULA variaveis
