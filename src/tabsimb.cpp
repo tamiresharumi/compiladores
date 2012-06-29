@@ -97,10 +97,10 @@ bool tabela_simbolos::insere(const std::string &nome, simbolo_da_harumi_fofinha 
 {
 	//se o símbolo já existe nesse nível, ferrou
 	if (tabela.count(nome) != 0)
-		return true;
+		return false;
 	
 	tabela[nome] = simb;
-	return false;
+	return true;
 }
 
 void tabela_simbolos::imprime()

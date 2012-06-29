@@ -3,7 +3,7 @@
 	#include <stdio.h>
 	#include "tabsimb.h"
 	extern int yylexerrs;
-	int yyerrstatus;
+	int yysinterrs = 0;
 	int yylex();
 	int yyparse();
 	void yyerror (char const *);
@@ -105,10 +105,15 @@ dcp_1:
 		dc_p
 	;
 dc_c:
-		CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA dcc_1
+		CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA
 		{
-			tabsimb.insere($2, $4);
+			if (!tabsimb.insere($2, $4))
+			{
+				yysinterrs++;
+				printf("erro: constante '%s' ja declarada na linha %i\n", $2, yylloc.first_line);
+			}
 		}
+		dcc_1
 	|	CONST error TOKEN_PONTO_VIRGULA {yyerrok;} 
 		dcc_1
 	|
