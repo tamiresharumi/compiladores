@@ -271,6 +271,13 @@ op_fator:
 operando:
 		numero
 	|	TOKEN_IDENTIFICADOR
+		{
+			simbolo_da_harumi_fofinha s;
+			if (!tabsimb.busca($1, s))
+			{
+				printf("erro: variavel '%s' nao declarada na linha %i\n", $1, yylloc.first_line);
+			}
+		}
 	;
 numero:
 		TOKEN_LITERAL_INTEIRO
