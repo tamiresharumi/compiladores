@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.5.1.  */
+/* A Bison parser, made by GNU Bison 2.5.  */
 
 /* Bison interface for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@
 typedef union YYSTYPE
 {
 
-/* Line 2072 of yacc.c  */
+/* Line 2068 of yacc.c  */
 #line 58 "src/sint.y"
 
 	const char* texto;
@@ -92,7 +92,7 @@ typedef union YYSTYPE
 
 
 
-/* Line 2072 of yacc.c  */
+/* Line 2068 of yacc.c  */
 #line 97 "src/sintatico.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
