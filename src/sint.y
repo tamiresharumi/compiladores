@@ -318,7 +318,6 @@ operando:
 			    	$1, yylloc.first_line);
 
 			}
-			
 		}
 	;
 numero:
