@@ -59,6 +59,9 @@
 
 %type <simb> numero
 %type <simb> tipo_var
+%type <simb> cmd_linha
+%type <simb> expressao
+%type <simb> operando
 
 %union{
 	const char* texto;
@@ -110,6 +113,7 @@ dcp_1:
 dc_c:
 		CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA
 		{
+			$4.categoria = CAT_CONSTANTE;
 			if (!tabsimb.insere($2, $4))
 			{
 				yysinterrs++;
@@ -221,13 +225,43 @@ other_stmt:
 	|	WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
 	|	REPEAT comandos UNTIL condicao
 	|	WHILE condicao DO other_stmt 
-	|	TOKEN_IDENTIFICADOR cmd_linha 
+	|	TOKEN_IDENTIFICADOR 
+		{
+			simbolo_da_harumi_fofinha s;
+			if (!tabsimb.busca($1, s))
+			{
+				yysinterrs++;
+				printf("erro: variavel '%s' nao declarada na linha %i\n",
+					$1, yylloc.first_line);
+			}
+			else if(s.categoria != CAT_VARIAVEL)
+			{
+				yysinterrs++;
+				printf("erro: atribuicao nao permitida para a var. '%s' da linha %i\n",
+					$1, yylloc.first_line);
+			}
+		}
+		cmd_linha 
+		{
+			printf("tipo: %d\n", $3.tipo);
+		
+			if (($2.tipo == TIPO_INT) && ($3.tipo == TIPO_FLOAT))
+			{
+			
+			}
+		}
 	|	BEGN comandos END
 	|
 	;
 cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		TOKEN_ATRIBUICAO expressao
+		{
+			$$.tipo =$2.tipo;
+		}
 	|	lista_arg
+		{
+			//procedimento	
+		}
 	;
 condicao:
 		expressao relacao expressao
@@ -269,17 +303,32 @@ op_fator:
 	|	TOKEN_DIV
 	;
 operando:
-		numero
+		numero 
+		{
+			$$ = $1;
+			$$.categoria = CAT_VARIAVEL;
+		}
 	|	TOKEN_IDENTIFICADOR
+		{
+			simbolo_da_harumi_fofinha s;
+			if (!tabsimb.busca($1, s))
+			{
+				yysinterrs++;
+				printf("erro: variavel '%s' nao declarada na linha %i\n",
+			    	$1, yylloc.first_line);
+
+			}
+			
+		}
 	;
 numero:
 		TOKEN_LITERAL_INTEIRO
 		{
-			$$ = simbolo_constante_da_harumi_fofinha($1);
+			$$ = simbolo_numero_da_harumi_fofinha($1);
 		}
 	|	TOKEN_LITERAL_REAL
 		{
-			$$ = simbolo_constante_da_harumi_fofinha($1);
+			$$ = simbolo_numero_da_harumi_fofinha($1);
 		}
 	;
 %%
