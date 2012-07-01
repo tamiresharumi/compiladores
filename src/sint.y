@@ -361,7 +361,7 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 						genericerrmsg("nao e possível atribuir 'real' para 'integer'");
 					else
 					{
-						//geração de código time!
+						C.push_back(armz(s.endereco));
 					}
 				}
 			}
@@ -418,6 +418,10 @@ expressao:
 				$$ = simbolo_variavel(TIPO_FLOAT);
 			else
 				$$ = simbolo_variavel($1.tipo);
+			if ($2 == TOKEN_SOMA)
+				C.push_back("SOMA");
+			else
+				C.push_back("SUBT");
 		}
 	;
 termo:
@@ -436,6 +440,7 @@ termo:
 				else
 				{
 					$$ = simbolo_variavel(TIPO_INT);
+					C.push_back("DIVI");
 				}
 			}
 			else
@@ -444,6 +449,7 @@ termo:
 					$$ = simbolo_variavel(TIPO_FLOAT);
 				else
 					$$ = simbolo_variavel($1.tipo);
+				C.push_back("MULT");
 			}
 		}
 	;
@@ -451,6 +457,8 @@ fator:
 		op_un operando /* um operador unário pode aparecer, mas não causa conflito com operadores dos termos */
 		{
 			$$ = $2;
+			if ($1 == TOKEN_SUB)
+				C.push_back("INVE");
 		}
 	|	TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR /* subexpressões sempre são delimitadas por '(' e ')' */
 		{
@@ -475,6 +483,10 @@ operando:
 		{
 			$$ = $1;
 			$$.categoria = CAT_VARIAVEL;
+			if ($1.tipo == TIPO_INT)
+				C.push_back(crct($1.valor.valori));
+			else
+				C.push_back(crct($1.valor.valorf));
 		}
 	|	TOKEN_IDENTIFICADOR
 		{
@@ -482,7 +494,10 @@ operando:
 			if (!tab_atual->busca($1, s))
 				yysinterrmsg($1, "nao declarada.");
 			else
+			{
 				$$ = s;
+				C.push_back(crvl(s.endereco));
+			}
 		}
 	;
 numero:
