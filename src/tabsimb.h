@@ -4,6 +4,8 @@
 #include <string>
 #include <map>
 
+struct tabela_simbolos;
+
 enum categoria_simbolo_da_harumi_fofinha
 {
 	CAT_VARIAVEL,
@@ -25,13 +27,14 @@ struct simbolo_da_harumi_fofinha
 	categoria_simbolo_da_harumi_fofinha categoria;
 	tipo_variavel_da_harumi_fofinha tipo;
 	int endereco;
-	int num_bytes;
+	int ordem;
 	int num_parametros;
 	//esse é o valor quando o símbolo é uma constante
 	union {
 		float valorf;
 		int valori;
 	} valor;
+	tabela_simbolos *tabela;
 };
 
 simbolo_da_harumi_fofinha simbolo_indefinido_da_harumi_fofinha();
@@ -50,7 +53,7 @@ struct tabela_simbolos
 	bool busca(const std::string &nome, simbolo_da_harumi_fofinha &simb);
 	bool insere(const std::string &nome, simbolo_da_harumi_fofinha &simb);
 
-	void imprime();
+	void imprime(int identacao=0);
 };
 
 #endif 

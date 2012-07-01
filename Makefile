@@ -19,7 +19,7 @@ clean:
 src/lexico.cpp: src/main.lex src/comum.h
 	flex -o src/lexico.cpp src/main.lex
 
-src/tabela.cpp: src/palavrasreservadas src/comum.h src/sintatico.hpp
+src/tabela.cpp: src/palavrasreservadas src/comum.h 
 	gperf --language=C++ -t --output-file=src/tabela.cpp src/palavrasreservadas
 
 src/sintatico.hpp src/sintatico.cpp: src/sint.y 

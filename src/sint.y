@@ -5,11 +5,13 @@
 	#include "tabsimb.h"
 	extern int yylexerrs;
 	int yysinterrs = 0;
+	int currpar = -1;
 	int yylex();
 	int yyparse();
 	void yyerror (char const *);
 
 	tabela_simbolos tabsimb;
+	tabela_simbolos *tab_atual = &tabsimb;
 	std::vector<std::string> identificadores;
 %}
 
@@ -113,7 +115,7 @@ dc_c:
 			if (!tabsimb.insere($2, $4))
 			{
 				yysinterrs++;
-				printf("erro: constante '%s' ja declarada na linha %i\n", $2, yylloc.first_line);
+				printf("erro:%i: constante '%s' ja declarada\n", yylloc.first_line, $2);
 			}
 		}
 		dcc_1
@@ -123,17 +125,15 @@ dc_c:
 	;
 dc_v:
 		
-		VAR 
-		{ identificadores.clear(); }
-		variaveis TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA
+		VAR var_decl TOKEN_DOIS_PONTOS tipo_var TOKEN_PONTO_VIRGULA
 		{
 			for (int i=0 ; i<identificadores.size() ; ++i)
 			{
-				if (!tabsimb.insere(identificadores[i], $5))
+				if (!tab_atual->insere(identificadores[i], $4))
 				{
 					yysinterrs++;
-					printf("erro: variavel '%s' ja declarada na linha %i\n",
-						identificadores[i].c_str(), yylloc.first_line);
+					printf("erro:%i: variavel '%s' ja declarada\n",
+						yylloc.first_line, identificadores[i].c_str());
 				}
 			}
 		}
@@ -152,6 +152,32 @@ tipo_var:
 			$$ = simbolo_variavel_da_harumi_fofinha(TIPO_INT);
 		}
 	;
+var_decl:
+		{ identificadores.clear(); }
+		variaveis
+	;
+var_prog:
+		{ identificadores.clear(); }
+		variaveis
+		{
+			simbolo_da_harumi_fofinha s;
+			for (int i=0 ; i<identificadores.size() ; ++i)
+			{
+				if (!tab_atual->busca(identificadores[i], s))
+				{
+					++yysinterrs;
+					printf("erro:%i: variavel '%s' nao existe\n",
+						yylloc.first_line, identificadores[i].c_str());
+				}
+				else if (s.categoria == CAT_PROCEDIMENTO)
+				{
+					++yysinterrs;
+					printf("erro:%i: '%s' é um procedimento\n",
+						yylloc.first_line, identificadores[i].c_str());
+				}
+			}
+		}
+	;
 variaveis:
 		TOKEN_IDENTIFICADOR
 		{ identificadores.push_back($1); }
@@ -162,17 +188,61 @@ mais_var:
 	|
 	;
 dc_p:
-		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA corpo_p dcp_1
+		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA
+		{
+			simbolo_da_harumi_fofinha proc = simbolo_procedimento_da_harumi_fofinha(identificadores.size());
+			proc.tabela = tab_atual;
+
+			if (!tabsimb.insere($2, proc))
+			{
+				simbolo_da_harumi_fofinha s;
+				tabsimb.busca($2, s);
+				const char *categorias[] = {
+					"variavel",
+					"constante",
+					"procedimento"
+				};
+				const char *cat = categorias[s.categoria];
+				printf("erro:%i: %s com nome '%s' ja declarada\n",
+					yylloc.first_line, cat, $2);
+				yysinterrs++;
+			}
+		}
+		corpo_p
+		{
+			tab_atual = &tabsimb;
+		}
+		dcp_1
 	|	PROCEDURE error TOKEN_PONTO_VIRGULA {yyerrok;}
 		dcp_1
 	|
 	;
 parametros:
-		TOKEN_ABRE_PAR lista_par TOKEN_FECHA_PAR
+		TOKEN_ABRE_PAR
+		{
+			identificadores.clear();
+			currpar = 0;
+			tab_atual = new tabela_simbolos(&tabsimb);
+		}
+		lista_par TOKEN_FECHA_PAR
 	|
 	;
 lista_par:
-		variaveis TOKEN_DOIS_PONTOS tipo_var mais_par
+		var_decl TOKEN_DOIS_PONTOS tipo_var
+		{
+			for (int i=0 ; i<identificadores.size() ; ++i)
+			{
+				$3.ordem = currpar++;
+				if (!tab_atual->insere(identificadores[i], $3))
+				{
+					yysinterrs++;
+					printf("erro:%i: variavel '%s' ja declarada\n",
+						yylloc.first_line, identificadores[i].c_str());
+				}
+			}
+			identificadores.clear();
+		}
+		mais_par
 	;
 mais_par:
 		TOKEN_PONTO_VIRGULA lista_par
@@ -217,8 +287,8 @@ unmatched:
 	|	IF condicao THEN matched ELSE unmatched
 	;
 other_stmt:
-		READLN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
-	|	WRITELN TOKEN_ABRE_PAR variaveis TOKEN_FECHA_PAR
+		READLN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
+	|	WRITELN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
 	|	REPEAT comandos UNTIL condicao
 	|	WHILE condicao DO other_stmt 
 	|	TOKEN_IDENTIFICADOR cmd_linha 
@@ -273,9 +343,9 @@ operando:
 	|	TOKEN_IDENTIFICADOR
 		{
 			simbolo_da_harumi_fofinha s;
-			if (!tabsimb.busca($1, s))
+			if (!tab_atual->busca($1, s))
 			{
-				printf("erro: variavel '%s' nao declarada na linha %i\n", $1, yylloc.first_line);
+				printf("erro:%i: variavel '%s' nao declarada\n", yylloc.first_line, $1);
 			}
 		}
 	;

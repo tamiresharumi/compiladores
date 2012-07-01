@@ -34,9 +34,10 @@ simbolo_da_harumi_fofinha simbolo_indefinido_da_harumi_fofinha()
 	simb.categoria = CAT_INDEFINIDO;
 	simb.tipo = TIPO_INDEFINIDO;
 	simb.endereco = -1;
-	simb.num_bytes = -1;
+	simb.ordem = -1;
 	simb.num_parametros = -1;
 	simb.valor.valori = -1;
+	simb.tabela = 0;
 	return simb;
 }
 
@@ -103,18 +104,27 @@ bool tabela_simbolos::insere(const std::string &nome, simbolo_da_harumi_fofinha 
 	return true;
 }
 
-void tabela_simbolos::imprime()
+void print_tabs(int n)
+{
+	for (int i=0 ; i<n ; ++i)
+		printf("\t");
+}
+
+void tabela_simbolos::imprime(int identacao)
 {
 	std::map<std::string, simbolo_da_harumi_fofinha>::iterator it;
 
+	print_tabs(identacao);
 	printf("Tamanho da tabela de símbolos: %i\n", tabela.size());
+	print_tabs(identacao);
 	printf("%-20s%-20s%-20s%-20s%-10s%-10s%-20s\n",
 		"Cadeia", "Categoria", "Tipo", "Endereço",
-		"Num bytes", "Num par", "Valor"
+		"Ordem", "Num par", "Valor"
 	);
+	print_tabs(identacao);
 	printf("%-20s%-20s%-20s%-19s%-10s%-10s%-20s\n",
 		"------", "---------", "----", "--------",
-		"---------", "-------", "-----"
+		"-----", "-------", "-----"
 	);
 	for (it=tabela.begin() ; it != tabela.end() ; ++it)
 	{
@@ -124,19 +134,23 @@ void tabela_simbolos::imprime()
 		if (it->second.tipo == TIPO_FLOAT)
 			sprintf(valor, "%g", it->second.valor.valorf);
 
+		print_tabs(identacao);
 		printf("%-20s%-20s%-20s0x%-17X%-10i%-10i%-20s\n",
 			it->first.c_str(),
 			categoria_string(it->second.categoria),
 			tipo_string(it->second.tipo),
 			it->second.endereco,
-			it->second.num_bytes,
+			it->second.ordem,
 			it->second.num_parametros,
 			valor
 		);
+		if (it->second.tabela)
+			it->second.tabela->imprime(identacao+1);
 	}
-	printf("%-20s%-20s%-20s%-19s%-10s%-10s%-20s\n",
-		"------", "---------", "----", "--------",
-		"---------", "-------", "-----"
-	);
+	//print_tabs(identacao);
+	//printf("%-20s%-20s%-20s%-19s%-10s%-10s%-20s\n",
+	//	"------", "---------", "----", "--------",
+	//	"---------", "-------", "-----"
+	//);
 }
 
