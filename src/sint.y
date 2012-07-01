@@ -3,10 +3,11 @@
 	#include <cstdio>
 	#include <vector>
 	#include "tabsimb.h"
+	#include "instrucoes.h"
 	extern int yylexerrs;
 	int yysinterrs = 0;
 	int currpar = -1;
-	int num_vars = 0;
+	int stack_size = 0;
 	int yylex();
 	int yyparse();
 	void yyerror (char const *);
@@ -145,7 +146,7 @@ dc_v:
 		{
 			for (int i=0 ; i<identificadores.size() ; ++i)
 			{
-				$4.endereco = num_vars++;
+				$4.endereco = stack_size++;
 				if (!tab_atual->insere(identificadores[i], $4))
 					yysinterrmsg(identificadores[i].c_str(), "já foi declarada nesse escopo.");
 				else
@@ -309,7 +310,7 @@ other_stmt:
 				simbolo s;
 				tabsimb.busca(identificadores[i], s);
 				C.push_back("LEIT");
-				C.push_back("ARMZ ");
+				C.push_back(armz(s.endereco));
 			}
 		}
 	|	WRITELN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
