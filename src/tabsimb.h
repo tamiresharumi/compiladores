@@ -51,10 +51,12 @@ struct tabela_simbolos
 
 	bool busca(const std::string &nome, simbolo_da_harumi_fofinha &simb);
 	bool insere(const std::string &nome, simbolo_da_harumi_fofinha &simb);
+	bool atualiza(const std::string &nome, simbolo_da_harumi_fofinha &simb);
 
 	int tamanho();
 	bool busca(int ordem, simbolo_da_harumi_fofinha &simb);
 
+	simbolo_da_harumi_fofinha& busca(const std::string &nome);
 	void imprime(int identacao=0);
 };
 

@@ -103,6 +103,24 @@ bool tabela_simbolos::insere(const std::string &nome, simbolo_da_harumi_fofinha 
 	return true;
 }
 
+bool tabela_simbolos::atualiza(const std::string &nome, simbolo_da_harumi_fofinha &simb)
+{
+	simbolo_da_harumi_fofinha tmp;
+	if (!busca(nome, tmp))
+		return false;
+	
+	simbolo_da_harumi_fofinha &s = busca(nome);
+	s = simb;
+	return true;
+}
+
+simbolo_da_harumi_fofinha& tabela_simbolos::busca(const std::string &nome)
+{
+	if (tabela.count(nome) == 0)
+		return tabela_pai->busca(nome);
+	return tabela[nome];
+}
+
 int tabela_simbolos::tamanho()
 {
 	return tabela.size();
