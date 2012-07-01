@@ -3,7 +3,7 @@
 
 #define CASE(X) case X: return #X;
 
-const char* categoria_string(categoria_simbolo_da_harumi_fofinha categoria)
+const char* categoria_string(categoria_simbolo categoria)
 {
 	switch (categoria)
 	{
@@ -16,7 +16,7 @@ const char* categoria_string(categoria_simbolo_da_harumi_fofinha categoria)
 	}
 }
 
-const char* tipo_string(tipo_variavel_da_harumi_fofinha tipo)
+const char* tipo_string(tipo_variavel tipo)
 {
 	switch (tipo)
 	{
@@ -28,9 +28,9 @@ const char* tipo_string(tipo_variavel_da_harumi_fofinha tipo)
 	}
 }
 
-simbolo_da_harumi_fofinha simbolo_indefinido_da_harumi_fofinha()
+simbolo simbolo_indefinido()
 {
-	simbolo_da_harumi_fofinha simb;
+	simbolo simb;
 	simb.categoria = CAT_INDEFINIDO;
 	simb.tipo = TIPO_INDEFINIDO;
 	simb.endereco = -1;
@@ -41,34 +41,34 @@ simbolo_da_harumi_fofinha simbolo_indefinido_da_harumi_fofinha()
 	return simb;
 }
 
-simbolo_da_harumi_fofinha simbolo_variavel_da_harumi_fofinha(tipo_variavel_da_harumi_fofinha tipo)
+simbolo simbolo_variavel(tipo_variavel tipo)
 {
-	simbolo_da_harumi_fofinha simb = simbolo_indefinido_da_harumi_fofinha();
+	simbolo simb = simbolo_indefinido();
 	simb.categoria = CAT_VARIAVEL;
 	simb.tipo = tipo;
 	return simb;
 }
 
-simbolo_da_harumi_fofinha simbolo_numero_da_harumi_fofinha(int valor)
+simbolo simbolo_numero(int valor)
 {
-	simbolo_da_harumi_fofinha simb = simbolo_indefinido_da_harumi_fofinha();
+	simbolo simb = simbolo_indefinido();
 	simb.tipo = TIPO_INT;
 	simb.valor.valori = valor;
 	return simb;
 }
 
-simbolo_da_harumi_fofinha simbolo_numero_da_harumi_fofinha(float valor)
+simbolo simbolo_numero(float valor)
 {
-	simbolo_da_harumi_fofinha simb = simbolo_indefinido_da_harumi_fofinha();
+	simbolo simb = simbolo_indefinido();
 	simb.categoria = CAT_CONSTANTE;
 	simb.tipo = TIPO_FLOAT;
 	simb.valor.valorf = valor;
 	return simb;
 }
 
-simbolo_da_harumi_fofinha simbolo_procedimento_da_harumi_fofinha(int num_parametros)
+simbolo simbolo_procedimento(int num_parametros)
 {
-	simbolo_da_harumi_fofinha simb = simbolo_indefinido_da_harumi_fofinha();
+	simbolo simb = simbolo_indefinido();
 	simb.categoria = CAT_PROCEDIMENTO;
 	simb.num_parametros = num_parametros;
 	return simb;
@@ -79,7 +79,7 @@ tabela_simbolos::tabela_simbolos(tabela_simbolos *tabela_pai) :
 {
 }
 
-bool tabela_simbolos::busca(const std::string &nome, simbolo_da_harumi_fofinha &simb)
+bool tabela_simbolos::busca(const std::string &nome, simbolo &simb)
 {
 	if (tabela.count(nome) == 0)
 	{
@@ -93,7 +93,7 @@ bool tabela_simbolos::busca(const std::string &nome, simbolo_da_harumi_fofinha &
 	return true;
 }
 
-bool tabela_simbolos::insere(const std::string &nome, simbolo_da_harumi_fofinha &simb)
+bool tabela_simbolos::insere(const std::string &nome, simbolo &simb)
 {
 	//se o símbolo já existe nesse nível, ferrou
 	if (tabela.count(nome) != 0)
@@ -103,18 +103,18 @@ bool tabela_simbolos::insere(const std::string &nome, simbolo_da_harumi_fofinha 
 	return true;
 }
 
-bool tabela_simbolos::atualiza(const std::string &nome, simbolo_da_harumi_fofinha &simb)
+bool tabela_simbolos::atualiza(const std::string &nome, simbolo &simb)
 {
-	simbolo_da_harumi_fofinha tmp;
+	simbolo tmp;
 	if (!busca(nome, tmp))
 		return false;
 	
-	simbolo_da_harumi_fofinha &s = busca(nome);
+	simbolo &s = busca(nome);
 	s = simb;
 	return true;
 }
 
-simbolo_da_harumi_fofinha& tabela_simbolos::busca(const std::string &nome)
+simbolo& tabela_simbolos::busca(const std::string &nome)
 {
 	if (tabela.count(nome) == 0)
 		return tabela_pai->busca(nome);
@@ -126,9 +126,9 @@ int tabela_simbolos::tamanho()
 	return tabela.size();
 }
 
-bool tabela_simbolos::busca(int ordem, simbolo_da_harumi_fofinha &simb)
+bool tabela_simbolos::busca(int ordem, simbolo &simb)
 {
-	std::map<std::string, simbolo_da_harumi_fofinha>::iterator it;
+	std::map<std::string, simbolo>::iterator it;
 	for (it=tabela.begin() ; it!=tabela.end() ; ++it)
 	{
 		if (it->second.ordem == ordem)
@@ -149,7 +149,7 @@ void print_tabs(int n)
 
 void tabela_simbolos::imprime(int identacao)
 {
-	std::map<std::string, simbolo_da_harumi_fofinha>::iterator it;
+	std::map<std::string, simbolo>::iterator it;
 
 	print_tabs(identacao);
 	printf("Tamanho da tabela de símbolos: %i\n", tabela.size());

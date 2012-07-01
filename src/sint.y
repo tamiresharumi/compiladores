@@ -12,10 +12,13 @@
 	void yysinterrmsg(const char*, const char*);
 	void procerrmsg(const char*, const char*);
 	void genericerrmsg(const char *msg);
-	bool verifica_tipos(const char *proc, const simbolo_da_harumi_fofinha &s);
+	bool verifica_tipos(const char *proc, const simbolo &s);
+	
 	tabela_simbolos tabsimb;
 	tabela_simbolos *tab_atual = &tabsimb;
 	std::vector<std::string> identificadores;
+
+	std::vector<std::string> C;
 %}
 
 %error-verbose
@@ -77,7 +80,7 @@
 	const char* texto;
 	float real;
 	int inteiro;
-	simbolo_da_harumi_fofinha simb;
+	simbolo simb;
 }
 
 %locations 
@@ -89,6 +92,9 @@ programa:
 	;
 programa_1:
 		PROGRAM TOKEN_IDENTIFICADOR
+		{
+			C.push_back("INPP");
+		}
 	|	error
 	;
 corpo:
@@ -150,28 +156,33 @@ dc_v:
 tipo_var:
 		REAL
 		{
-			$$ = simbolo_variavel_da_harumi_fofinha(TIPO_FLOAT);
+			$$ = simbolo_variavel(TIPO_FLOAT);
 		}
 	|	INTEGER
 		{
-			$$ = simbolo_variavel_da_harumi_fofinha(TIPO_INT);
+			$$ = simbolo_variavel(TIPO_INT);
 		}
 	;
 var_decl:
 		{ identificadores.clear(); }
 		variaveis
+		{C.push_back("ALME 1");}
 	;
 var_prog:
 		{ identificadores.clear(); }
 		variaveis
 		{
-			simbolo_da_harumi_fofinha s;
+			simbolo s;
 			for (int i=0 ; i<identificadores.size() ; ++i)
 			{
 				if (!tab_atual->busca(identificadores[i], s))
 					yysinterrmsg(identificadores[i].c_str(), "não foi declarada.");	
 				else if (s.categoria == CAT_PROCEDIMENTO)
-					yysinterrmsg(identificadores[i].c_str(), "foi declarada como procedimento.");	
+					yysinterrmsg(identificadores[i].c_str(), "foi declarada como procedimento.");
+				else
+				{
+					//mimimi
+				}
 			}
 		}
 	;
@@ -187,12 +198,12 @@ mais_var:
 dc_p:
 		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA
 		{
-			simbolo_da_harumi_fofinha proc = simbolo_procedimento_da_harumi_fofinha(tab_atual->tamanho());
+			simbolo proc = simbolo_procedimento(tab_atual->tamanho());
 			proc.tabela = tab_atual;
 
 			if (!tabsimb.insere($2, proc))
 			{
-				simbolo_da_harumi_fofinha s;
+				simbolo s;
 				tabsimb.busca($2, s);
 				const char *categorias[] = {
 					"variavel",
@@ -289,18 +300,27 @@ unmatched:
 	;
 other_stmt:
 		READLN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
+		{
+			for (int i=0;i<identificadores.size();i++)
+			{
+				simbolo s;
+				tabsimb.busca(identificadores[i], s);
+				C.push_back("LEIT");
+				C.push_back("ARMZ ");
+			}
+		}
 	|	WRITELN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
 	|	REPEAT comandos UNTIL condicao
 	|	WHILE condicao DO other_stmt 
 	|	TOKEN_IDENTIFICADOR 
 		{
-			simbolo_da_harumi_fofinha s;
+			simbolo s;
 			if (!tabsimb.busca($1, s))
 				yysinterrmsg($1, "nao foi declarada.");	
 		}
 		cmd_linha 
 		{
-			simbolo_da_harumi_fofinha s;
+			simbolo s;
 			tabsimb.busca($1, s);
 
 			if ((s.tipo == TIPO_INT) && ($3.tipo == TIPO_FLOAT))
@@ -316,7 +336,7 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		TOKEN_ATRIBUICAO expressao
 		{
 			const char *id = $<texto>-1;
-			simbolo_da_harumi_fofinha s;
+			simbolo s;
 
 			//não precisa fazer nada se não achar, é um erro semântico que já
 			//foi detectado no TOKEN_IDENTIFICADOR antes
@@ -347,7 +367,7 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 	|	lista_arg
 		{
 			const char *proc = $<texto>-1;
-			simbolo_da_harumi_fofinha s;
+			simbolo s;
 			//procedimentos só podem estar declarados na tabela global, então bora lá
 			tabsimb.busca(proc, s);
 			if (s.categoria != CAT_PROCEDIMENTO)
@@ -391,9 +411,9 @@ expressao:
 	|	expressao op_termo termo /* termos são separados na parte superior da gramática, fazendo com que '+' e '-' tenham menor precedência */
 		{
 			if ($1.tipo != $3.tipo)
-				$$ = simbolo_variavel_da_harumi_fofinha(TIPO_FLOAT);
+				$$ = simbolo_variavel(TIPO_FLOAT);
 			else
-				$$ = simbolo_variavel_da_harumi_fofinha($1.tipo);
+				$$ = simbolo_variavel($1.tipo);
 		}
 	;
 termo:
@@ -411,15 +431,15 @@ termo:
 				}
 				else
 				{
-					$$ = simbolo_variavel_da_harumi_fofinha(TIPO_INT);
+					$$ = simbolo_variavel(TIPO_INT);
 				}
 			}
 			else
 			{
 				if ($1.tipo != $3.tipo)
-					$$ = simbolo_variavel_da_harumi_fofinha(TIPO_FLOAT);
+					$$ = simbolo_variavel(TIPO_FLOAT);
 				else
-					$$ = simbolo_variavel_da_harumi_fofinha($1.tipo);
+					$$ = simbolo_variavel($1.tipo);
 			}
 		}
 	;
@@ -454,7 +474,7 @@ operando:
 		}
 	|	TOKEN_IDENTIFICADOR
 		{
-			simbolo_da_harumi_fofinha s;
+			simbolo s;
 			if (!tab_atual->busca($1, s))
 				yysinterrmsg($1, "nao declarada.");
 			else
@@ -464,25 +484,25 @@ operando:
 numero:
 		TOKEN_LITERAL_INTEIRO
 		{
-			$$ = simbolo_numero_da_harumi_fofinha($1);
+			$$ = simbolo_numero($1);
 		}
 	|	TOKEN_LITERAL_REAL
 		{
-			$$ = simbolo_numero_da_harumi_fofinha($1);
+			$$ = simbolo_numero($1);
 		}
 	;
 %%
 
-bool verifica_tipos(const char *proc, const simbolo_da_harumi_fofinha &s)
+bool verifica_tipos(const char *proc, const simbolo &s)
 {
 	for (int i=0 ; i<s.num_parametros ; ++i)
 	{
-		simbolo_da_harumi_fofinha par;
+		simbolo par;
 		if (!s.tabela->busca(i, par))
 			procerrmsg(proc, "tem problema com parametro");
 		else
 		{
-			simbolo_da_harumi_fofinha arg;
+			simbolo arg;
 			if (!tab_atual->busca(identificadores[i], arg))
 				yysinterrmsg(identificadores[i].c_str(), "nao existe");
 			else
@@ -539,5 +559,7 @@ int main(void)
 #endif
 	yyparse();
 	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs+yysinterrs);
-	//tabsimb.imprime();
+	tabsimb.imprime();
+	for (int i=0;i<C.size();i++)
+		printf("%s\n", C[i].c_str());
 }

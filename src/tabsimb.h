@@ -6,7 +6,7 @@
 
 struct tabela_simbolos;
 
-enum categoria_simbolo_da_harumi_fofinha
+enum categoria_simbolo
 {
 	CAT_VARIAVEL,
 	CAT_CONSTANTE,
@@ -14,17 +14,17 @@ enum categoria_simbolo_da_harumi_fofinha
 	CAT_INDEFINIDO
 };
 
-enum tipo_variavel_da_harumi_fofinha
+enum tipo_variavel
 {
 	TIPO_INT,
 	TIPO_FLOAT,
 	TIPO_INDEFINIDO
 };
 
-struct simbolo_da_harumi_fofinha
+struct simbolo
 {
-	categoria_simbolo_da_harumi_fofinha categoria;
-	tipo_variavel_da_harumi_fofinha tipo;
+	categoria_simbolo categoria;
+	tipo_variavel tipo;
 	int endereco;
 	int ordem;
 	int num_parametros;
@@ -36,32 +36,32 @@ struct simbolo_da_harumi_fofinha
 	tabela_simbolos *tabela;
 };
 
-simbolo_da_harumi_fofinha simbolo_indefinido_da_harumi_fofinha();
-simbolo_da_harumi_fofinha simbolo_variavel_da_harumi_fofinha(tipo_variavel_da_harumi_fofinha categoria);
-simbolo_da_harumi_fofinha simbolo_numero_da_harumi_fofinha(int valor);
-simbolo_da_harumi_fofinha simbolo_numero_da_harumi_fofinha(float valor);
-simbolo_da_harumi_fofinha simbolo_procedimento_da_harumi_fofinha(int num_parametros);
+simbolo simbolo_indefinido();
+simbolo simbolo_variavel(tipo_variavel categoria);
+simbolo simbolo_numero(int valor);
+simbolo simbolo_numero(float valor);
+simbolo simbolo_procedimento(int num_parametros);
 
 struct tabela_simbolos
 {
 	tabela_simbolos *tabela_pai;
-	std::map<std::string, simbolo_da_harumi_fofinha> tabela;
+	std::map<std::string, simbolo> tabela;
 
 	tabela_simbolos(tabela_simbolos *tabela_pai=0);
 
-	bool busca(const std::string &nome, simbolo_da_harumi_fofinha &simb);
-	bool insere(const std::string &nome, simbolo_da_harumi_fofinha &simb);
-	bool atualiza(const std::string &nome, simbolo_da_harumi_fofinha &simb);
+	bool busca(const std::string &nome, simbolo &simb);
+	bool insere(const std::string &nome, simbolo &simb);
+	bool atualiza(const std::string &nome, simbolo &simb);
 
 	int tamanho();
-	bool busca(int ordem, simbolo_da_harumi_fofinha &simb);
+	bool busca(int ordem, simbolo &simb);
 
-	simbolo_da_harumi_fofinha& busca(const std::string &nome);
+	simbolo& busca(const std::string &nome);
 	void imprime(int identacao=0);
 };
 
-const char* categoria_string(categoria_simbolo_da_harumi_fofinha categoria);
-const char* tipo_string(tipo_variavel_da_harumi_fofinha tipo);
+const char* categoria_string(categoria_simbolo categoria);
+const char* tipo_string(tipo_variavel tipo);
 
 #endif 
 
