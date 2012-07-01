@@ -8,7 +8,7 @@
 	int yylex();
 	int yyparse();
 	void yyerror (char const *);
-
+	void yysinterrmsg(const char*, const char*);
 	tabela_simbolos tabsimb;
 	std::vector<std::string> identificadores;
 %}
@@ -62,7 +62,8 @@
 %type <simb> cmd_linha
 %type <simb> expressao
 %type <simb> operando
-
+%type <simb> termo
+%type <simb> fator
 %union{
 	const char* texto;
 	float real;
@@ -234,7 +235,8 @@ other_stmt:
 				printf("erro: variavel '%s' nao declarada na linha %i\n",
 					$1, yylloc.first_line);
 			}
-			else if(s.categoria != CAT_VARIAVEL)
+			else
+			if(s.categoria != CAT_VARIAVEL)
 			{
 				yysinterrs++;
 				printf("erro: atribuicao nao permitida para a var. '%s' da linha %i\n",
@@ -243,11 +245,12 @@ other_stmt:
 		}
 		cmd_linha 
 		{
-			printf("tipo: %d\n", $3.tipo);
-		
-			if (($2.tipo == TIPO_INT) && ($3.tipo == TIPO_FLOAT))
+			simbolo_da_harumi_fofinha s;
+			tabsimb.busca($1, s);
+
+			if ((s.tipo == TIPO_INT) && ($3.tipo == TIPO_FLOAT))
 			{
-			
+				yysinterrmsg($1, "nao pode receber um parametro REAL.");
 			}
 		}
 	|	BEGN comandos END
@@ -257,6 +260,7 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		TOKEN_ATRIBUICAO expressao
 		{
 			$$.tipo =$2.tipo;
+			//printf("tipo: %d\n", $2.tipo);
 		}
 	|	lista_arg
 		{
@@ -279,15 +283,27 @@ relacao:
 shift/reduce nestas produções */
 expressao:
 		termo
+		{
+			$$ = $1;
+		}
 	|	expressao op_termo termo /* termos são separados na parte superior da gramática, fazendo com que '+' e '-' tenham menor precedência */
 	;
 termo:
 		fator
+		{
+			$$ = $1;
+		}
 	|	termo op_fator fator /* fatores sempre estão na parte mais baixa da árvore de derivação, são avaliados primeiro */
 	;
 fator:
 		op_un operando /* um operador unário pode aparecer, mas não causa conflito com operadores dos termos */
+		{
+			$$ = $2;
+		}
 	|	TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR /* subexpressões sempre são delimitadas por '(' e ')' */
+		{
+			$$ = $2;
+		}
 	;
 op_un:
 		TOKEN_SOMA
@@ -312,12 +328,9 @@ operando:
 		{
 			simbolo_da_harumi_fofinha s;
 			if (!tabsimb.busca($1, s))
-			{
-				yysinterrs++;
-				printf("erro: variavel '%s' nao declarada na linha %i\n",
-			    	$1, yylloc.first_line);
-
-			}
+				yysinterrmsg($1, "nao declarada.");
+			else
+				$$ = s;
 		}
 	;
 numero:
@@ -337,6 +350,13 @@ numero:
    of the character read if not a number.  It skips all blanks
    and tabs, and returns 0 for end-of-input.  */
 
+void yysinterrmsg(const char* var, const char* mensagem)
+{
+	yysinterrs++;
+	printf("Erro na linha %d: variavel %s %s\n", 
+		yylloc.first_line, var, mensagem);
+
+}
 
 void yyerror (char const *s)
 {
