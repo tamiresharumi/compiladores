@@ -26,16 +26,21 @@ struct simbolo
 {
 	//o que o símbolo é, se é variável, constante, procedure
 	categoria_simbolo categoria;
+	
 	//o tipo de uma variável ou de uma constante. procedure não usa isso
 	tipo_variavel tipo;
+	
 	//pra variável, o endereço dela na pilha. pra procedure, o endereço da
 	//primeira instrução no vetor de código. constante não usa isso
 	int endereco;
+	
 	//a posição do argumento na lista de parâmetros do procedure. variáveis
 	//globais, constantes e procedure não usam isso
 	int ordem;
+	
 	//o número de parâmetros do procedure. variável e constantes não usam isso
 	int num_parametros;
+	
 	//esse é o valor quando o símbolo é uma constante
 	union {
 		float valorf;
@@ -54,12 +59,15 @@ struct simbolo
 //cria um símbolo com todos os campos da struct ali de cima com valores "invalidos".
 //funciona como um construtor.
 simbolo simbolo_indefinido();
+
 //constrói um símbolo com o campo "categoria" como CAT_VARIAVEL
 simbolo simbolo_variavel(tipo_variavel categoria);
+
 //constrói um símbolo com o campo "categoria" como CAT_CONSTANTE, e seta o valor do campo
 //"valori" ou "valorf", dependendo do argumento
 simbolo simbolo_numero(int valor);
 simbolo simbolo_numero(float valor);
+
 //constrói um símbolo com o campo "categoria" como CAT_PROCEDIMENTO,
 //e seta o campo "num_parametros" 
 simbolo simbolo_procedimento(int num_parametros);
@@ -149,7 +157,7 @@ struct tabela_simbolos
 	//
 	//NOTA: se o símbolo do argumento não existir, a função vai travar o programa todo,
 	//estilo "conserta isso aí logo".
-	simbolo& busca(const std::string &nome);
+	simbolo* busca(const std::string &nome);
 	//imprime a tabela de símbolos. o argumento controla quantos "\t" vai colocar
 	//antes de cada linha, pra poder representar uma tabela dentro de outra
 	void imprime(int identacao=0);

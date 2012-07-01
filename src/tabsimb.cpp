@@ -115,19 +115,19 @@ bool tabela_simbolos::atualiza(const std::string &nome, simbolo &simb)
 	return true;
 }
 
-simbolo& tabela_simbolos::busca(const std::string &nome)
+simbolo* tabela_simbolos::busca(const std::string &nome)
 {
 	if (tabela.count(nome) == 0)
 	{
 		if (tabela_pai)
-			return tabela_pai->busca(nome);
+			return &tabela_pai->busca(nome);
 		else
 		{
 			printf("simbolo '%s' nao existe! tô caindo fora!\n", nome.c_str());
 			abort();
 		}
 	}
-	return tabela[nome];
+	return &tabela[nome];
 }
 
 int tabela_simbolos::tamanho()

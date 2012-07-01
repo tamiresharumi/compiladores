@@ -6,6 +6,7 @@
 	extern int yylexerrs;
 	int yysinterrs = 0;
 	int currpar = -1;
+	int num_vars = 0;
 	int yylex();
 	int yyparse();
 	void yyerror (char const *);
@@ -144,8 +145,11 @@ dc_v:
 		{
 			for (int i=0 ; i<identificadores.size() ; ++i)
 			{
+				$4.endereco = num_vars++;
 				if (!tab_atual->insere(identificadores[i], $4))
 					yysinterrmsg(identificadores[i].c_str(), "já foi declarada nesse escopo.");
+				else
+					C.push_back("ALME 1");
 			}
 		}
 		dcv_1
@@ -166,7 +170,6 @@ tipo_var:
 var_decl:
 		{ identificadores.clear(); }
 		variaveis
-		{C.push_back("ALME 1");}
 	;
 var_prog:
 		{ identificadores.clear(); }
