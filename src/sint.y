@@ -1,5 +1,6 @@
 %{
 	#define YYDEBUG 0
+	#define SHOULD_I_GENERATE_CODE ((yysinterrs+yynerrs+yylexerrs) == 0) 
 	#include <cstdio>
 	#include <vector>
 	#include "tabsimb.h"
@@ -21,6 +22,7 @@
 	std::vector<std::string> identificadores;
 
 	std::vector<std::string> C;
+	std::vector<std::string> C_auxiliar;
 %}
 
 %error-verbose
@@ -211,7 +213,8 @@ dc_p:
 				tabsimb.busca($2, s);
 				const char *categorias[] = {
 					"variavel",
-					"constante",
+
+"constante",
 					"procedimento"
 				};
 				std::string mensagem = "ja declarada como ";
@@ -305,6 +308,7 @@ unmatched:
 other_stmt:
 		READLN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
 		{
+			if(SHOULD_I_GENERATE_CODE)
 			for (int i=0;i<identificadores.size();i++)
 			{
 				simbolo s;
@@ -314,6 +318,18 @@ other_stmt:
 			}
 		}
 	|	WRITELN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
+		{
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				simbolo s;
+				for (int i=0;i<identificadores.size();i++)
+				{
+					tab_atual->busca(identificadores[i], s);
+					C.push_back(crvl(s.endereco));
+					C.push_back("IMPR");
+				}
+			}
+		}
 	|	REPEAT comandos UNTIL condicao
 	|	WHILE condicao DO other_stmt 
 	|	TOKEN_IDENTIFICADOR 
