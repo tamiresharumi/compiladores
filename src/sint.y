@@ -9,7 +9,7 @@
 	int yylex();
 	int yyparse();
 	void yyerror (char const *);
-
+	void yysinterrmsg(const char*, const char*);
 	tabela_simbolos tabsimb;
 	tabela_simbolos *tab_atual = &tabsimb;
 	std::vector<std::string> identificadores;
@@ -61,7 +61,11 @@
 
 %type <simb> numero
 %type <simb> tipo_var
-
+%type <simb> cmd_linha
+%type <simb> expressao
+%type <simb> operando
+%type <simb> termo
+%type <simb> fator
 %union{
 	const char* texto;
 	float real;
@@ -112,6 +116,7 @@ dcp_1:
 dc_c:
 		CONST TOKEN_IDENTIFICADOR TOKEN_ATRIBUICAO numero TOKEN_PONTO_VIRGULA
 		{
+			$4.categoria = CAT_CONSTANTE;
 			if (!tabsimb.insere($2, $4))
 			{
 				yysinterrs++;
@@ -291,13 +296,46 @@ other_stmt:
 	|	WRITELN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
 	|	REPEAT comandos UNTIL condicao
 	|	WHILE condicao DO other_stmt 
-	|	TOKEN_IDENTIFICADOR cmd_linha 
+	|	TOKEN_IDENTIFICADOR 
+		{
+			simbolo_da_harumi_fofinha s;
+			if (!tabsimb.busca($1, s))
+			{
+				yysinterrs++;
+				printf("erro: variavel '%s' nao declarada na linha %i\n",
+					$1, yylloc.first_line);
+			}
+			else
+			if(s.categoria != CAT_VARIAVEL)
+			{
+				yysinterrs++;
+				printf("erro: atribuicao nao permitida para a var. '%s' da linha %i\n",
+					$1, yylloc.first_line);
+			}
+		}
+		cmd_linha 
+		{
+			simbolo_da_harumi_fofinha s;
+			tabsimb.busca($1, s);
+
+			if ((s.tipo == TIPO_INT) && ($3.tipo == TIPO_FLOAT))
+			{
+				yysinterrmsg($1, "nao pode receber um parametro REAL.");
+			}
+		}
 	|	BEGN comandos END
 	|
 	;
 cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		TOKEN_ATRIBUICAO expressao
+		{
+			$$.tipo =$2.tipo;
+			//printf("tipo: %d\n", $2.tipo);
+		}
 	|	lista_arg
+		{
+			//procedimento	
+		}
 	;
 condicao:
 		expressao relacao expressao
@@ -315,15 +353,27 @@ relacao:
 shift/reduce nestas produções */
 expressao:
 		termo
+		{
+			$$ = $1;
+		}
 	|	expressao op_termo termo /* termos são separados na parte superior da gramática, fazendo com que '+' e '-' tenham menor precedência */
 	;
 termo:
 		fator
+		{
+			$$ = $1;
+		}
 	|	termo op_fator fator /* fatores sempre estão na parte mais baixa da árvore de derivação, são avaliados primeiro */
 	;
 fator:
 		op_un operando /* um operador unário pode aparecer, mas não causa conflito com operadores dos termos */
+		{
+			$$ = $2;
+		}
 	|	TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR /* subexpressões sempre são delimitadas por '(' e ')' */
+		{
+			$$ = $2;
+		}
 	;
 op_un:
 		TOKEN_SOMA
@@ -339,24 +389,28 @@ op_fator:
 	|	TOKEN_DIV
 	;
 operando:
-		numero
+		numero 
+		{
+			$$ = $1;
+			$$.categoria = CAT_VARIAVEL;
+		}
 	|	TOKEN_IDENTIFICADOR
 		{
 			simbolo_da_harumi_fofinha s;
 			if (!tab_atual->busca($1, s))
-			{
-				printf("erro:%i: variavel '%s' nao declarada\n", yylloc.first_line, $1);
-			}
+				yysinterrmsg($1, "nao declarada.");
+			else
+				$$ = s;
 		}
 	;
 numero:
 		TOKEN_LITERAL_INTEIRO
 		{
-			$$ = simbolo_constante_da_harumi_fofinha($1);
+			$$ = simbolo_numero_da_harumi_fofinha($1);
 		}
 	|	TOKEN_LITERAL_REAL
 		{
-			$$ = simbolo_constante_da_harumi_fofinha($1);
+			$$ = simbolo_numero_da_harumi_fofinha($1);
 		}
 	;
 %%
@@ -366,6 +420,13 @@ numero:
    of the character read if not a number.  It skips all blanks
    and tabs, and returns 0 for end-of-input.  */
 
+void yysinterrmsg(const char* var, const char* mensagem)
+{
+	yysinterrs++;
+	printf("Erro na linha %d: variavel %s %s\n", 
+		yylloc.first_line, var, mensagem);
+
+}
 
 void yyerror (char const *s)
 {

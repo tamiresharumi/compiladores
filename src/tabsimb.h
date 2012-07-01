@@ -39,8 +39,8 @@ struct simbolo_da_harumi_fofinha
 
 simbolo_da_harumi_fofinha simbolo_indefinido_da_harumi_fofinha();
 simbolo_da_harumi_fofinha simbolo_variavel_da_harumi_fofinha(tipo_variavel_da_harumi_fofinha categoria);
-simbolo_da_harumi_fofinha simbolo_constante_da_harumi_fofinha(int valor);
-simbolo_da_harumi_fofinha simbolo_constante_da_harumi_fofinha(float valor);
+simbolo_da_harumi_fofinha simbolo_numero_da_harumi_fofinha(int valor);
+simbolo_da_harumi_fofinha simbolo_numero_da_harumi_fofinha(float valor);
 simbolo_da_harumi_fofinha simbolo_procedimento_da_harumi_fofinha(int num_parametros);
 
 struct tabela_simbolos
