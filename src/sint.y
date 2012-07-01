@@ -317,7 +317,7 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		{
 			const char *id = $<texto>-1;
 			simbolo_da_harumi_fofinha s;
-*/
+
 			//não precisa fazer nada se não achar, é um erro semântico que já
 			//foi detectado no TOKEN_IDENTIFICADOR antes
 			if (tab_atual->busca(id, s))
