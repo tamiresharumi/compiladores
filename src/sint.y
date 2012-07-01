@@ -10,6 +10,9 @@
 	int yyparse();
 	void yyerror (char const *);
 	void yysinterrmsg(const char*, const char*);
+	void procerrmsg(const char*, const char*);
+	void genericerrmsg(const char *msg);
+	bool verifica_tipos(const char *proc, const simbolo_da_harumi_fofinha &s);
 	tabela_simbolos tabsimb;
 	tabela_simbolos *tab_atual = &tabsimb;
 	std::vector<std::string> identificadores;
@@ -195,7 +198,7 @@ mais_var:
 dc_p:
 		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA
 		{
-			simbolo_da_harumi_fofinha proc = simbolo_procedimento_da_harumi_fofinha(identificadores.size());
+			simbolo_da_harumi_fofinha proc = simbolo_procedimento_da_harumi_fofinha(tab_atual->tamanho());
 			proc.tabela = tab_atual;
 
 			if (!tabsimb.insere($2, proc))
@@ -260,11 +263,17 @@ dc_loc:
 		dc_v
 	;
 lista_arg:
-		TOKEN_ABRE_PAR argumentos TOKEN_FECHA_PAR
+		TOKEN_ABRE_PAR
+		{ identificadores.clear(); }
+		argumentos TOKEN_FECHA_PAR
 	|
 	;
 argumentos:
-		TOKEN_IDENTIFICADOR mais_ident
+		TOKEN_IDENTIFICADOR
+		{
+			identificadores.push_back($1);
+		}
+		mais_ident
 	;
 mais_ident:
 		TOKEN_PONTO_VIRGULA argumentos 
@@ -305,13 +314,6 @@ other_stmt:
 				printf("erro: variavel '%s' nao declarada na linha %i\n",
 					$1, yylloc.first_line);
 			}
-			else
-			if(s.categoria != CAT_VARIAVEL)
-			{
-				yysinterrs++;
-				printf("erro: atribuicao nao permitida para a var. '%s' da linha %i\n",
-					$1, yylloc.first_line);
-			}
 		}
 		cmd_linha 
 		{
@@ -334,7 +336,26 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		}
 	|	lista_arg
 		{
-			//procedimento	
+			const char *proc = $<texto>-1;
+			simbolo_da_harumi_fofinha s;
+			tabsimb.busca(proc, s);
+			if (s.categoria != CAT_PROCEDIMENTO)
+				yysinterrmsg(proc, "nao e um procedimento");
+			else if (identificadores.size() != s.num_parametros)
+			{
+				char buffer[0xff];
+				sprintf(buffer, "recebe %i argumentos, mas foram passados %i",
+					s.num_parametros, identificadores.size());
+				procerrmsg(proc, buffer);
+			}
+			else
+			{
+				//estamos indo bem! hora de testar os tipos dos argumentos
+				if (verifica_tipos(proc, s))
+				{
+					//uhu! hora de gerar código
+				}
+			}
 		}
 	;
 condicao:
@@ -415,17 +436,55 @@ numero:
 	;
 %%
 
-/* The lexical analyzer returns a double floating point
-   number on the stack and the token NUM, or the numeric code
-   of the character read if not a number.  It skips all blanks
-   and tabs, and returns 0 for end-of-input.  */
+bool verifica_tipos(const char *proc, const simbolo_da_harumi_fofinha &s)
+{
+	for (int i=0 ; i<s.num_parametros ; ++i)
+	{
+		simbolo_da_harumi_fofinha par;
+		if (!s.tabela->busca(i, par))
+			procerrmsg(proc, "tem problema com parametro");
+		else
+		{
+			simbolo_da_harumi_fofinha arg;
+			if (!tab_atual->busca(identificadores[i], arg))
+				yysinterrmsg(identificadores[i].c_str(), "nao existe");
+			else
+			{
+				if (arg.tipo != par.tipo)
+				{
+					char buffer[0xff];
+					sprintf(buffer, "argumento %i de '%s' deve ser do tipo '%s'",
+						i+1, proc, tipo_string(par.tipo));
+					genericerrmsg(buffer);
+				}	
+				else
+				{
+					//bora gerar código?
+				}
+			}
+		}
+	}
+}
 
 void yysinterrmsg(const char* var, const char* mensagem)
 {
 	yysinterrs++;
-	printf("Erro na linha %d: variavel %s %s\n", 
+	printf("Erro na linha %d: variavel '%s' %s\n", 
 		yylloc.first_line, var, mensagem);
 
+}
+
+void procerrmsg(const char *proc, const char *msg)
+{
+	yysinterrs++;
+	printf("Erro na linha %d: procedimento '%s' %s\n",
+		yylloc.first_line, proc, msg);
+}
+
+void genericerrmsg(const char *msg)
+{
+	yysinterrs++;
+	printf("Erro na linha %d: %s\n", yylloc.first_line, msg);
 }
 
 void yyerror (char const *s)

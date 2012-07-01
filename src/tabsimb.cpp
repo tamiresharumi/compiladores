@@ -103,6 +103,26 @@ bool tabela_simbolos::insere(const std::string &nome, simbolo_da_harumi_fofinha 
 	return true;
 }
 
+int tabela_simbolos::tamanho()
+{
+	return tabela.size();
+}
+
+bool tabela_simbolos::busca(int ordem, simbolo_da_harumi_fofinha &simb)
+{
+	std::map<std::string, simbolo_da_harumi_fofinha>::iterator it;
+	for (it=tabela.begin() ; it!=tabela.end() ; ++it)
+	{
+		if (it->second.ordem == ordem)
+		{
+			simb = it->second;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void print_tabs(int n)
 {
 	for (int i=0 ; i<n ; ++i)
