@@ -11,4 +11,18 @@ std::string armz(int endereco)
 	return retorno.str();
 }
 
+std::string crct(float k)
+{
+	std::stringstream retorno;
+	retorno << "CRCT " << k;
+	return retorno.str();
+}
+
+std::string crvl(int endereco)
+{
+	std::stringstream retorno;
+	retorno << "CRVL " << endereco;
+	return retorno.str();
+}
+
 #endif
