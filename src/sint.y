@@ -79,6 +79,7 @@
 %type <inteiro> op_fator
 %type <inteiro> op_termo
 %type <inteiro> op_un
+%type <inteiro> relacao
 
 %union{
 	const char* texto;
@@ -411,15 +412,40 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 	;
 condicao:
 		expressao relacao expressao
+		{
+			switch ($2)
+			{
+				case TOKEN_IGUAL:
+					C.push_back("CPIG");
+					break;
+				case TOKEN_DIFERENTE:
+					C.push_back("CDES");
+					break;
+				case TOKEN_MENOR_IGUAL:
+					C.push_back("CPMI");
+					break;
+				case TOKEN_MAIOR_IGUAL:
+					C.push_back("CMAI");
+					break;
+				case TOKEN_MENOR:
+					C.push_back("CPME");
+					break;
+				case TOKEN_MAIOR:
+					C.push_back("CPMA");
+					break;
+				default:
+					break;
+			}
+		}
 	;
 relacao:
-		TOKEN_IGUAL
-	|	TOKEN_DIFERENTE
-	|	TOKEN_MENOR_IGUAL
-	|	TOKEN_MAIOR_IGUAL
-	|	TOKEN_MENOR
-	|	TOKEN_MAIOR
-	|	error 
+		TOKEN_IGUAL { $$ = TOKEN_IGUAL; }
+	|	TOKEN_DIFERENTE { $$ = TOKEN_DIFERENTE; }
+	|	TOKEN_MENOR_IGUAL { $$ = TOKEN_MENOR_IGUAL; }
+	|	TOKEN_MAIOR_IGUAL { $$ = TOKEN_MAIOR_IGUAL; }
+	|	TOKEN_MENOR { $$ = TOKEN_MENOR; }
+	|	TOKEN_MAIOR { $$ = TOKEN_MAIOR; }
+	|	error { $$ = -1; }
 	;
 /* a precedência dos operadores faz parte da gramática, não há conflitos de
 shift/reduce nestas produções */
