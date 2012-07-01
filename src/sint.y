@@ -206,7 +206,7 @@ dc_p:
 		}
 		dcp_1
 	|	PROCEDURE error TOKEN_PONTO_VIRGULA {yyerrok;}
-		dcp_1
+		corpo_p dcp_1
 	|
 	;
 parametros:
@@ -231,13 +231,16 @@ lista_par:
 			identificadores.clear();
 		}
 		mais_par
+	|	error 
 	;
 mais_par:
-		TOKEN_PONTO_VIRGULA lista_par
+		TOKEN_PONTO_VIRGULA {yyerrok;}
+		lista_par
 	|
 	;
 corpo_p:
 		dc_loc BEGN comandos END TOKEN_PONTO_VIRGULA
+	|	dc_loc error TOKEN_PONTO_VIRGULA {yyerrok;}
 	;
 dc_loc:
 		dc_v
@@ -308,9 +311,9 @@ other_stmt:
 cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		TOKEN_ATRIBUICAO expressao
 		{
-			if($0.tipo != $2.tipo)
+		/*	if($0.tipo != $2.tipo)
 				yysinterrmsg($2, "não está sendo atribuída a um tipo compatível.");
-
+*/
 			$$.tipo =$2.tipo;
 		}
 	|	lista_arg
