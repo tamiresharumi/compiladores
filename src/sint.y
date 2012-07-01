@@ -312,15 +312,40 @@ other_stmt:
 cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		TOKEN_ATRIBUICAO expressao
 		{
-			if($0.tipo != $2.tipo)
-				yysinterrmsg($2, "não está sendo atribuída a um tipo compatível.");
+			const char *id = $<texto>-1;
+			simbolo_da_harumi_fofinha s;
 
-			$$.tipo =$2.tipo;
+			//não precisa fazer nada se não achar, é um erro semântico que já
+			//foi detectado no TOKEN_IDENTIFICADOR antes
+			if (tab_atual->busca(id, s))
+			{
+				if (s.categoria != CAT_VARIAVEL)
+				{
+					char buffer[0xff];
+					sprintf(buffer,
+						"atribuicao nao pode ser feita em '%s', so em variaveis",
+						id
+					);
+					genericerrmsg(buffer);
+				}
+				else
+				{
+					if (s.tipo == TIPO_INT && $2.tipo == TIPO_FLOAT)
+						genericerrmsg("nao e possível atribuir 'real' para 'integer'");
+					else
+					{
+						//geração de código time!
+					}
+				}
+			}
+			else
+				$$.tipo = TIPO_INDEFINIDO;
 		}
 	|	lista_arg
 		{
 			const char *proc = $<texto>-1;
 			simbolo_da_harumi_fofinha s;
+			//procedimentos só podem estar declarados na tabela global, então bora lá
 			tabsimb.busca(proc, s);
 			if (s.categoria != CAT_PROCEDIMENTO)
 				yysinterrmsg(proc, "nao e um procedimento");
