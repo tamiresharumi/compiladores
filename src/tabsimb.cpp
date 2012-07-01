@@ -1,5 +1,6 @@
 #include "tabsimb.h"
 #include <cstdio>
+#include <cstdlib>
 
 #define CASE(X) case X: return #X;
 
@@ -117,7 +118,15 @@ bool tabela_simbolos::atualiza(const std::string &nome, simbolo &simb)
 simbolo& tabela_simbolos::busca(const std::string &nome)
 {
 	if (tabela.count(nome) == 0)
-		return tabela_pai->busca(nome);
+	{
+		if (tabela_pai)
+			return tabela_pai->busca(nome);
+		else
+		{
+			printf("simbolo '%s' nao existe! tô caindo fora!\n", nome.c_str());
+			abort();
+		}
+	}
 	return tabela[nome];
 }
 
