@@ -460,9 +460,11 @@ fator:
 			if ($1 == TOKEN_SUB)
 				C.push_back("INVE");
 		}
-	|	TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR /* subexpressões sempre são delimitadas por '(' e ')' */
+	|	op_un TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR /* subexpressões sempre são delimitadas por '(' e ')' */
 		{
-			$$ = $2;
+			$$ = $3;
+			if ($1 == TOKEN_SUB)
+				C.push_back("INVE");
 		}
 	;
 op_un:
