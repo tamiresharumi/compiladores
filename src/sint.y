@@ -93,6 +93,9 @@
 %% /* Grammar rules and actions follow.  */
 programa:
 		programa_1 TOKEN_PONTO_VIRGULA corpo TOKEN_PONTO_FINAL
+		{
+			C.push_back("PARA");
+		}
 	|	programa_1 TOKEN_PONTO_VIRGULA corpo {yynerrs++; yyerror("syntax error: missing '.'");}/*corrige a falta do .*/ 
 	;
 programa_1:
