@@ -118,10 +118,7 @@ dc_c:
 		{
 			$4.categoria = CAT_CONSTANTE;
 			if (!tabsimb.insere($2, $4))
-			{
-				yysinterrs++;
-				printf("erro:%i: constante '%s' ja declarada\n", yylloc.first_line, $2);
-			}
+				yysinterrmsg($2, "já foi declarada nesse escopo.");
 		}
 		dcc_1
 	|	CONST error TOKEN_PONTO_VIRGULA {yyerrok;} 
@@ -135,11 +132,7 @@ dc_v:
 			for (int i=0 ; i<identificadores.size() ; ++i)
 			{
 				if (!tab_atual->insere(identificadores[i], $4))
-				{
-					yysinterrs++;
-					printf("erro:%i: variavel '%s' ja declarada\n",
-						yylloc.first_line, identificadores[i].c_str());
-				}
+					yysinterrmsg(identificadores[i].c_str(), "já foi declarada nesse escopo.");
 			}
 		}
 		dcv_1
@@ -169,17 +162,9 @@ var_prog:
 			for (int i=0 ; i<identificadores.size() ; ++i)
 			{
 				if (!tab_atual->busca(identificadores[i], s))
-				{
-					++yysinterrs;
-					printf("erro:%i: variavel '%s' nao existe\n",
-						yylloc.first_line, identificadores[i].c_str());
-				}
+					yysinterrmsg(identificadores[i].c_str(), "não foi declarada.");	
 				else if (s.categoria == CAT_PROCEDIMENTO)
-				{
-					++yysinterrs;
-					printf("erro:%i: '%s' é um procedimento\n",
-						yylloc.first_line, identificadores[i].c_str());
-				}
+					yysinterrmsg(identificadores[i].c_str(), "foi declarada como procedimento.");	
 			}
 		}
 	;
@@ -207,10 +192,9 @@ dc_p:
 					"constante",
 					"procedimento"
 				};
-				const char *cat = categorias[s.categoria];
-				printf("erro:%i: %s com nome '%s' ja declarada\n",
-					yylloc.first_line, cat, $2);
-				yysinterrs++;
+				std::string mensagem = "ja declarada como ";
+				mensagem += categorias[s.categoria];
+				yysinterrmsg($2, mensagem.c_str());
 			}
 		}
 		corpo_p
@@ -239,11 +223,7 @@ lista_par:
 			{
 				$3.ordem = currpar++;
 				if (!tab_atual->insere(identificadores[i], $3))
-				{
-					yysinterrs++;
-					printf("erro:%i: variavel '%s' ja declarada\n",
-						yylloc.first_line, identificadores[i].c_str());
-				}
+					yysinterrmsg(identificadores[i].c_str(), "já foi declarada");	
 			}
 			identificadores.clear();
 		}
@@ -300,18 +280,7 @@ other_stmt:
 		{
 			simbolo_da_harumi_fofinha s;
 			if (!tabsimb.busca($1, s))
-			{
-				yysinterrs++;
-				printf("erro: variavel '%s' nao declarada na linha %i\n",
-					$1, yylloc.first_line);
-			}
-			else
-			if(s.categoria != CAT_VARIAVEL)
-			{
-				yysinterrs++;
-				printf("erro: atribuicao nao permitida para a var. '%s' da linha %i\n",
-					$1, yylloc.first_line);
-			}
+				yysinterrmsg($1, "nao foi declarada.");	
 		}
 		cmd_linha 
 		{
@@ -322,6 +291,7 @@ other_stmt:
 			{
 				yysinterrmsg($1, "nao pode receber um parametro REAL.");
 			}
+			
 		}
 	|	BEGN comandos END
 	|
@@ -329,12 +299,14 @@ other_stmt:
 cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		TOKEN_ATRIBUICAO expressao
 		{
+			if($0.tipo != $2.tipo)
+				yysinterrmsg($2, "não está sendo atribuída a um tipo compatível.");
+
 			$$.tipo =$2.tipo;
-			//printf("tipo: %d\n", $2.tipo);
 		}
 	|	lista_arg
 		{
-			//procedimento	
+				
 		}
 	;
 condicao:
@@ -423,7 +395,7 @@ numero:
 void yysinterrmsg(const char* var, const char* mensagem)
 {
 	yysinterrs++;
-	printf("Erro na linha %d: variavel %s %s\n", 
+	printf("Erro na linha %d: '%s' %s\n", 
 		yylloc.first_line, var, mensagem);
 
 }
