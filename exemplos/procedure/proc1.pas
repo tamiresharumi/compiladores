@@ -17,4 +17,5 @@ program proc1;
 begin
 	a := 10;
 	b := 20;
+	meuproc(a,a,a,d);
 end.
