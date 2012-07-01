@@ -217,8 +217,7 @@ dc_p:
 				tabsimb.busca($2, s);
 				const char *categorias[] = {
 					"variavel",
-
-"constante",
+					"constante",
 					"procedimento"
 				};
 				std::string mensagem = "ja declarada como ";
