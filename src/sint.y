@@ -97,6 +97,7 @@ programa:
 programa_1:
 		PROGRAM TOKEN_IDENTIFICADOR
 		{
+			if(SHOULD_I_GENERATE_CODE)
 			C.push_back("INPP");
 		}
 	|	error
@@ -299,11 +300,24 @@ cmd:
 	;
 matched:
 		other_stmt
-	|	IF condicao THEN matched ELSE matched
+	|	if_statement matched ELSE matched
+		
 	;
 unmatched:
-		IF condicao THEN cmd
-	|	IF condicao THEN matched ELSE unmatched
+		if_statement cmd
+		{
+			
+		}
+	|	if_statement matched ELSE unmatched
+	;
+if_statement:
+		IF condicao THEN
+		{
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				C.push_back("mark");
+			}
+		}
 	;
 other_stmt:
 		READLN TOKEN_ABRE_PAR var_prog TOKEN_FECHA_PAR
