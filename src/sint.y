@@ -69,6 +69,10 @@
 %type <simb> operando
 %type <simb> termo
 %type <simb> fator
+%type <inteiro> op_fator
+%type <inteiro> op_termo
+%type <inteiro> op_un
+
 %union{
 	const char* texto;
 	float real;
@@ -378,6 +382,12 @@ expressao:
 			$$ = $1;
 		}
 	|	expressao op_termo termo /* termos são separados na parte superior da gramática, fazendo com que '+' e '-' tenham menor precedência */
+		{
+			if ($1.tipo != $3.tipo)
+				$$ = simbolo_variavel_da_harumi_fofinha(TIPO_FLOAT);
+			else
+				$$ = simbolo_variavel_da_harumi_fofinha($1.tipo);
+		}
 	;
 termo:
 		fator
@@ -385,6 +395,26 @@ termo:
 			$$ = $1;
 		}
 	|	termo op_fator fator /* fatores sempre estão na parte mais baixa da árvore de derivação, são avaliados primeiro */
+		{
+			if ($2 == TOKEN_DIV)
+			{
+				if ($1.tipo != TIPO_INT || $3.tipo != TIPO_INT)
+				{
+					genericerrmsg("divisao so pode ser entre integers");
+				}
+				else
+				{
+					$$ = simbolo_variavel_da_harumi_fofinha(TIPO_INT);
+				}
+			}
+			else
+			{
+				if ($1.tipo != $3.tipo)
+					$$ = simbolo_variavel_da_harumi_fofinha(TIPO_FLOAT);
+				else
+					$$ = simbolo_variavel_da_harumi_fofinha($1.tipo);
+			}
+		}
 	;
 fator:
 		op_un operando /* um operador unário pode aparecer, mas não causa conflito com operadores dos termos */
@@ -397,17 +427,17 @@ fator:
 		}
 	;
 op_un:
-		TOKEN_SOMA
-	|	TOKEN_SUB
-	|	/* um operador unário pode ser vazio, as expressões "1-+2" e "1-2" são equivalentes */
+		TOKEN_SOMA { $$ = TOKEN_SOMA; }
+	|	TOKEN_SUB { $$ = TOKEN_SUB; }
+	|	{ $$ = -1; } /* um operador unário pode ser vazio, as expressões "1-+2" e "1-2" são equivalentes */
 	;
 op_termo:
-		TOKEN_SOMA
-	|	TOKEN_SUB
+		TOKEN_SOMA { $$ = TOKEN_SOMA; }
+	|	TOKEN_SUB { $$ = TOKEN_SUB; }
 	;
 op_fator:
-		TOKEN_MUL
-	|	TOKEN_DIV
+		TOKEN_MUL { $$ = TOKEN_MUL; }
+	|	TOKEN_DIV { $$ = TOKEN_DIV; }
 	;
 operando:
 		numero 
@@ -453,14 +483,15 @@ bool verifica_tipos(const char *proc, const simbolo_da_harumi_fofinha &s)
 				if (arg.tipo != par.tipo)
 				{
 					char buffer[0xff];
+					const char *tipos[] = {
+						"integer",
+						"real",
+						"TIPO_INDEFINIDO"
+					};
 					sprintf(buffer, "argumento %i de '%s' deve ser do tipo '%s'",
-						i+1, proc, tipo_string(par.tipo));
+						i+1, proc, tipos[par.tipo]);
 					genericerrmsg(buffer);
 				}	
-				else
-				{
-					//bora gerar código?
-				}
 			}
 		}
 	}
@@ -501,5 +532,5 @@ int main(void)
 #endif
 	yyparse();
 	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs+yysinterrs);
-	tabsimb.imprime();
+	//tabsimb.imprime();
 }
