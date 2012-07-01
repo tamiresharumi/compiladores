@@ -110,8 +110,8 @@ bool tabela_simbolos::atualiza(const std::string &nome, simbolo &simb)
 	if (!busca(nome, tmp))
 		return false;
 	
-	simbolo &s = busca(nome);
-	s = simb;
+	simbolo *s = busca(nome);
+	*s = simb;
 	return true;
 }
 
@@ -120,11 +120,10 @@ simbolo* tabela_simbolos::busca(const std::string &nome)
 	if (tabela.count(nome) == 0)
 	{
 		if (tabela_pai)
-			return &tabela_pai->busca(nome);
+			return tabela_pai->busca(nome);
 		else
 		{
-			printf("simbolo '%s' nao existe! tô caindo fora!\n", nome.c_str());
-			abort();
+			return 0;
 		}
 	}
 	return &tabela[nome];

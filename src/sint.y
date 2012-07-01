@@ -318,7 +318,7 @@ other_stmt:
 	|	TOKEN_IDENTIFICADOR 
 		{
 			simbolo s;
-			if (!tab_local->busca($1, s))
+			if (!tab_atual->busca($1, s))
 				yysinterrmsg($1, "nao foi declarada.");	
 		}
 		cmd_linha 
