@@ -1,0 +1,44 @@
+\section{Decisões de Projeto e Implementação}
+
+Para a última parte do trabalho, não é permitido chamadas de
+procedimento dentro de um procedimento. Consequentemente, procedimentos
+recursivos também não são permitidos. Caso isso aconteça, um erro semântico é
+disparado. Essa decisão foi tomada tendo como ponto chave o conjunto de
+instruções dado, que dificulta o endereçamento das variáveis nos procedimentos.
+
+Outra decisão tomada foi a de não emitir mensagem de erro quando há variáveis
+de tipos diferentes dentro de um \texttt{readln} ou um \texttt{writeln}, já que
+a instrução para ler ou imprimir variáveis é a mesma, independente do tipo.
+
+Há uma tabela de símbolos para cada escopo, ou seja, uma tabela para o programa
+e uma tabela para cada procedimento declarado. Cada tabela de procedimento
+possui um ponteiro para a tabela, para acesso das variáveis alocadas um escopo
+acima.
+
+Para as operações em que são permitidos operandos de tipos diferentes 
+(\texttt{INT} e \texttt{FLOAT}), o resultado da operação será um \texttt{FLOAT}.
+
+A geração de código é feita juntamente com a análise semântica, em apenas uma
+etapa. Para solucionar o problema de endereçamento dos desvios, foi criado uma
+pilha como ferramenta auxiliar, para armazenar os endereços de retorno ou
+endereços de atualização. Tal estrutura foi escolhida pela característica de
+regras da gramática: como uma regra menor deve ser sintetizada antes de uma
+regra maior que a contenha, o último elemento colocado será o primeiro a ser
+retirado, caracterizando assim uma pilha.
+
+Notas sobre a gramática:
+\begin{itemize}
+	\item Os argumentos de um procedimento são separados por ponto-e-vírgula,
+	diferentemente dos exemplos dados em sala, em que eram separados por
+	vírgula.
+\end{itemize}
+
+Não proc dentro de proc
+Não proc recursivo
+Proc com args separados por ;
+readln pega qqr valor já que o conj inst eh o msm
+msm coisa p writeln
+tabela de simbolos local p cd proc
+antes de else nao pode ;
+mult float x int tem res float
+
