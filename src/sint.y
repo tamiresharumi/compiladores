@@ -411,7 +411,7 @@ other_stmt:
 			for (int i=0;i<identificadores.size();i++)
 			{
 				simbolo s;
-				tabsimb.busca(identificadores[i], s);
+				tab_atual->busca(identificadores[i], s);
 				C.push_back("LEIT");
 				C.push_back(armz(s.endereco));
 			}
