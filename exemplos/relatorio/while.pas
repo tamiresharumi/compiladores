@@ -1,7 +1,8 @@
 program whileprog;
     var x,y : integer;
 begin
-    {calcula o resto da divisao de x por y}
+    {calcula o resto da
+	divisao de x por y}
     readln(x,y);
     if x < 0 then
         x := -x;
