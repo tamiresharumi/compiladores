@@ -98,7 +98,8 @@
 programa:
 		programa_1 TOKEN_PONTO_VIRGULA corpo TOKEN_PONTO_FINAL
 		{
-			C.push_back("PARA");
+			if(SHOULD_I_GENERATE_CODE)
+				C.push_back("PARA");
 		}
 	|	programa_1 TOKEN_PONTO_VIRGULA corpo {yynerrs++; yyerror("syntax error: missing '.'");}/*corrige a falta do .*/ 
 	;
@@ -106,7 +107,7 @@ programa_1:
 		PROGRAM TOKEN_IDENTIFICADOR
 		{
 			if(SHOULD_I_GENERATE_CODE)
-			C.push_back("INPP");
+				C.push_back("INPP");
 		}
 	|	error
 	;
@@ -165,7 +166,8 @@ dc_v:
 				if (!tab_atual->insere(identificadores[i], $4))
 					yysinterrmsg(identificadores[i].c_str(), "já foi declarada nesse escopo.");
 				else
-					C.push_back("ALME 1");
+					if(SHOULD_I_GENERATE_CODE)
+						C.push_back("ALME 1");
 			}
 		}
 		dcv_1
@@ -228,8 +230,11 @@ dc_p:
 
 			//separa uma posição pra colocar o desvio do começo
 			//do procedimento
-			C.push_back("");
-			auxiliar.push(C.size() - 1);
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				C.push_back("");
+				auxiliar.push(C.size() - 1);
+			}
 		}
 		parametros
 		{
@@ -257,16 +262,18 @@ dc_p:
 			
 			//desaloca memória e retorna pra onde deveria
 			simbolo *s = tabsimb.busca($2);
-			if (s)
+			if ((s)&&(SHOULD_I_GENERATE_CODE))
 			{
 				C.push_back(desm(s->tabela->tamanho()));
 				C.push_back("RTPR");
 			}
 
 			//coloca a instrução de desvio no começo do procedure
-			C[auxiliar.top()] = dsvi(C.size()+1);
-			auxiliar.pop();
-
+			if (SHOULD_I_GENERATE_CODE)
+			{
+				C[auxiliar.top()] = dsvi(C.size()+1);
+				auxiliar.pop();
+			}
 			estou_dentro_de_procedure = 0;
 		}
 		dcp_1
@@ -292,7 +299,7 @@ lista_par:
 				$3.endereco = stack_size++;
 				if (!tab_atual->insere(identificadores[i], $3))
 					yysinterrmsg(identificadores[i].c_str(), "já foi declarada");	
-				else
+				else if (SHOULD_I_GENERATE_CODE)
 					C.push_back("COPVL");
 			}
 			identificadores.clear();
@@ -348,15 +355,17 @@ matched:
 			{
 				C[auxiliar.top()] = dsvf(C.size()+2);
 				auxiliar.pop();
-				printf("matched - linha %d\n", C.size());
 				C.push_back("");
 				auxiliar.push(C.size()-1);
 			}
 		}
 		ELSE matched
 		{
-			C[auxiliar.top()] = dsvi(C.size()+1);
-			auxiliar.pop();
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				C[auxiliar.top()] = dsvi(C.size()+1);
+				auxiliar.pop();
+			}
 		}
 	;
 unmatched:
@@ -418,28 +427,39 @@ other_stmt:
 		}
 	|	REPEAT
 		{
-			auxiliar.push(C.size() + 1);
+			if(SHOULD_I_GENERATE_CODE)
+				auxiliar.push(C.size() + 1);
 		}
 		comandos UNTIL condicao
 		{
-			C.push_back(dsvf(auxiliar.top()));
-			auxiliar.pop();
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				C.push_back(dsvf(auxiliar.top()));
+				auxiliar.pop();
+			}
 		}
 	|	WHILE 
 		{
-			auxiliar.push(C.size());
+			if(SHOULD_I_GENERATE_CODE)
+				auxiliar.push(C.size());
 		}
 		condicao
 		{
-			C.push_back("");
-			auxiliar.push(C.size() + 1);
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				C.push_back("");
+				auxiliar.push(C.size() + 1);
+			}
 		}
 		DO other_stmt
 		{
-			C[auxiliar.top()] = dsvf(C.size() + 2);
-			auxiliar.pop();
-			C.push_back(dsvi(auxiliar.top()));
-			auxiliar.pop();
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				C[auxiliar.top()] = dsvf(C.size() + 2);
+				auxiliar.pop();
+				C.push_back(dsvi(auxiliar.top()));
+				auxiliar.pop();
+			}
 		}
 	|	TOKEN_IDENTIFICADOR 
 		{
@@ -488,7 +508,7 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 				{
 					if (s.tipo == TIPO_INT && $2.tipo == TIPO_FLOAT)
 						genericerrmsg("nao e possível atribuir 'real' para 'integer'");
-					else
+					else if (SHOULD_I_GENERATE_CODE)
 					{
 						C.push_back(armz(s.endereco));
 					}
@@ -528,28 +548,31 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 condicao:
 		expressao relacao expressao
 		{
-			switch ($2)
+			if (SHOULD_I_GENERATE_CODE)
 			{
-				case TOKEN_IGUAL:
-					C.push_back("CPIG");
-					break;
-				case TOKEN_DIFERENTE:
-					C.push_back("CDES");
-					break;
-				case TOKEN_MENOR_IGUAL:
-					C.push_back("CPMI");
-					break;
-				case TOKEN_MAIOR_IGUAL:
-					C.push_back("CMAI");
-					break;
-				case TOKEN_MENOR:
-					C.push_back("CPME");
-					break;
-				case TOKEN_MAIOR:
-					C.push_back("CPMA");
-					break;
-				default:
-					break;
+				switch ($2)
+				{
+					case TOKEN_IGUAL:
+						C.push_back("CPIG");
+						break;
+					case TOKEN_DIFERENTE:
+						C.push_back("CDES");
+						break;
+					case TOKEN_MENOR_IGUAL:
+						C.push_back("CPMI");
+						break;
+					case TOKEN_MAIOR_IGUAL:
+						C.push_back("CMAI");
+						break;
+					case TOKEN_MENOR:
+						C.push_back("CPME");
+						break;
+					case TOKEN_MAIOR:
+						C.push_back("CPMA");
+						break;
+					default:
+						break;
+				}
 			}
 		}
 	;
@@ -575,10 +598,13 @@ expressao:
 				$$ = simbolo_variavel(TIPO_FLOAT);
 			else
 				$$ = simbolo_variavel($1.tipo);
-			if ($2 == TOKEN_SOMA)
-				C.push_back("SOMA");
-			else
-				C.push_back("SUBT");
+			if (SHOULD_I_GENERATE_CODE)
+			{
+				if ($2 == TOKEN_SOMA)
+					C.push_back("SOMA");
+				else
+					C.push_back("SUBT");
+			}
 		}
 	;
 termo:
@@ -597,7 +623,8 @@ termo:
 				else
 				{
 					$$ = simbolo_variavel(TIPO_INT);
-					C.push_back("DIVI");
+				if(SHOULD_I_GENERATE_CODE)	
+						C.push_back("DIVI");
 				}
 			}
 			else
@@ -606,7 +633,8 @@ termo:
 					$$ = simbolo_variavel(TIPO_FLOAT);
 				else
 					$$ = simbolo_variavel($1.tipo);
-				C.push_back("MULT");
+				if(SHOULD_I_GENERATE_CODE)
+					C.push_back("MULT");
 			}
 		}
 	;
@@ -614,13 +642,13 @@ fator:
 		op_un operando /* um operador unário pode aparecer, mas não causa conflito com operadores dos termos */
 		{
 			$$ = $2;
-			if ($1 == TOKEN_SUB)
+			if (($1 == TOKEN_SUB)&&(SHOULD_I_GENERATE_CODE))
 				C.push_back("INVE");
 		}
 	|	op_un TOKEN_ABRE_PAR expressao TOKEN_FECHA_PAR /* subexpressões sempre são delimitadas por '(' e ')' */
 		{
 			$$ = $3;
-			if ($1 == TOKEN_SUB)
+			if (($1 == TOKEN_SUB)&&(SHOULD_I_GENERATE_CODE))
 				C.push_back("INVE");
 		}
 	;
@@ -642,10 +670,11 @@ operando:
 		{
 			$$ = $1;
 			$$.categoria = CAT_VARIAVEL;
-			if ($1.tipo == TIPO_INT)
-				C.push_back(crct($1.valor.valori));
-			else
-				C.push_back(crct($1.valor.valorf));
+			if(SHOULD_I_GENERATE_CODE)
+				if ($1.tipo == TIPO_INT)
+					C.push_back(crct($1.valor.valori));
+				else
+					C.push_back(crct($1.valor.valorf));
 		}
 	|	TOKEN_IDENTIFICADOR
 		{
@@ -738,6 +767,13 @@ int main(void)
 	yyparse();
 	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs+yysinterrs);
 	tabsimb.imprime();
-	for (int i=0;i<C.size();i++)
-		printf("%3i: %s\n", i+1, C[i].c_str());
+	if (SHOULD_I_GENERATE_CODE)
+	{
+		FILE* instr = fopen("instrucoes.ins", "w");
+		for (int i=0;i<C.size();i++)
+			fprintf(instr,"%s\n", C[i].c_str());
+		fclose(instr);
+		return 0;
+	}
+	else return 1;
 }
