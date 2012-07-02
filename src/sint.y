@@ -3,6 +3,7 @@
 	#define SHOULD_I_GENERATE_CODE ((yysinterrs+yynerrs+yylexerrs) == 0) 
 	#include <cstdio>
 	#include <vector>
+	#include <stack>
 	#include "tabsimb.h"
 	#include "instrucoes.h"
 	extern int yylexerrs;
@@ -23,6 +24,7 @@
 
 	std::vector<std::string> C;
 	std::vector<std::string> C_auxiliar;
+	std::stack <int> auxiliar;
 %}
 
 %error-verbose
@@ -303,22 +305,53 @@ cmd:
 	;
 matched:
 		other_stmt
-	|	if_statement matched ELSE matched
-		
+	|	if_statement matched 
+		{
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				C[auxiliar.top()] = dsvf(C.size()+2);
+				auxiliar.pop();
+				printf("matched - linha %d\n", C.size());
+				C.push_back("");
+				auxiliar.push(C.size()-1);
+			}
+		}
+		ELSE matched
+		{
+			C[auxiliar.top()] = dsvi(C.size()+1);
+			auxiliar.pop();
+		}
 	;
 unmatched:
 		if_statement cmd
 		{
-			
+			if (SHOULD_I_GENERATE_CODE)
+			{
+				C[auxiliar.top()] = dsvf(C.size()+1);
+				auxiliar.pop();
+			}
 		}
-	|	if_statement matched ELSE unmatched
+	|	if_statement matched 
+		{
+			if(SHOULD_I_GENERATE_CODE)
+			{
+				C[auxiliar.top()] = dsvf(C.size()+2);
+				auxiliar.pop();
+				printf("unmatched - linha %d\n", C.size());
+				C.push_back("");
+				auxiliar.push(C.size()-1);
+			}
+		}
+		ELSE unmatched
 	;
 if_statement:
 		IF condicao THEN
 		{
 			if(SHOULD_I_GENERATE_CODE)
 			{
-				C.push_back("mark");
+				C.push_back("");
+				stack_size = C.size() - 1;
+				auxiliar.push(stack_size);
 			}
 		}
 	;

@@ -25,4 +25,16 @@ std::string crvl(int endereco)
 	return retorno.str();
 }
 
+std::string dsvf(int endereco)
+{
+	std::stringstream retorno;
+	retorno << "DSVF " << endereco;
+	return retorno.str();
+}
+std::string dsvi(int endereco)
+{
+ 	std::stringstream retorno;
+  	retorno << "DSVF " << endereco;
+   	return retorno.str();
+}
 #endif
