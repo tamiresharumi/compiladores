@@ -452,7 +452,7 @@ other_stmt:
 			if(SHOULD_I_GENERATE_CODE)
 			{
 				C.push_back("");
-				auxiliar.push(C.size() + 1);
+				auxiliar.push(C.size() - 1);
 			}
 		}
 		DO other_stmt
