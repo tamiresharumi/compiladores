@@ -785,18 +785,38 @@ void yyerror (char const *s)
 	
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 #if YYDEBUG == 1
 	extern int yydebug;
 	yydebug = 1;
 #endif
+	extern FILE *yyin;
+
+	if (argc != 3)
+	{
+		printf("Uso: %s <arquivo-entrada> <arquivo-saida>\n", argv[0]);
+		return 1;
+	}
+
+	yyin = fopen(argv[1], "r");
+	if (!yyin)
+	{
+		printf("erro: Nao foi possivel abrir o arquivo '%s'\n", argv[1]);
+		return 1;
+	}
+
 	yyparse();
 	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs+yysinterrs);
 	//tabsimb.imprime();
 	if (SHOULD_I_GENERATE_CODE)
 	{
-		FILE* instr = fopen("instrucoes.ins", "w");
+		FILE* instr = fopen(argv[2], "w");
+		if (!instr)
+		{
+			printf("erro: Nao foi possivel abrir o arquivo '%s'\n", argv[2]);
+			return 1;
+		}
 		for (int i=0;i<C.size();i++)
 			fprintf(instr,"%s\n", C[i].c_str());
 		fclose(instr);
