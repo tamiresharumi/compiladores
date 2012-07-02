@@ -34,7 +34,7 @@ std::string dsvf(int endereco)
 std::string dsvi(int endereco)
 {
  	std::stringstream retorno;
-  	retorno << "DSVF " << endereco;
+  	retorno << "DSVI " << endereco;
    	return retorno.str();
 }
 #endif

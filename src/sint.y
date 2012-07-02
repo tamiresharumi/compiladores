@@ -350,8 +350,7 @@ if_statement:
 			if(SHOULD_I_GENERATE_CODE)
 			{
 				C.push_back("");
-				stack_size = C.size() - 1;
-				auxiliar.push(stack_size);
+				auxiliar.push(C.size() - 1);
 			}
 		}
 	;
@@ -380,8 +379,31 @@ other_stmt:
 				}
 			}
 		}
-	|	REPEAT comandos UNTIL condicao
-	|	WHILE condicao DO other_stmt 
+	|	REPEAT
+		{
+			auxiliar.push(C.size() + 1);
+		}
+		comandos UNTIL condicao
+		{
+			C.push_back(dsvf(auxiliar.top()));
+			auxiliar.pop();
+		}
+	|	WHILE 
+		{
+			auxiliar.push(C.size());
+		}
+		condicao
+		{
+			C.push_back("");
+			auxiliar.push(C.size() + 1);
+		}
+		DO other_stmt
+		{
+			C[auxiliar.top()] = dsvf(C.size() + 2);
+			auxiliar.pop();
+			C.push_back(dsvi(auxiliar.top()));
+			auxiliar.pop();
+		}
 	|	TOKEN_IDENTIFICADOR 
 		{
 			simbolo s;
