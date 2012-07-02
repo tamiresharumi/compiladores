@@ -236,6 +236,10 @@ dc_p:
 			simbolo proc = simbolo_procedimento(tab_atual->tamanho());
 			proc.tabela = tab_atual;
 
+			//auxiliar.top tem a posição da instrução DSVI, com indice começando
+			//em zero. A posição dessa instrução na lista (base índice 1) é
+			//top()+1. Como eu quero a instrução logo depois do DSVI, top()+2
+			proc.endereco = auxiliar.top() + 2;
 			if (!tabsimb.insere($2, proc))
 			{
 				simbolo s;
@@ -520,7 +524,23 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 				//estamos indo bem! hora de testar os tipos dos argumentos
 				if (verifica_tipos(proc, s))
 				{
-					//uhu! hora de gerar código
+					//espaço pra instrução de empilhar endereço de retorno
+					C.push_back("");
+					auxiliar.push(C.size() - 1);
+
+					//empilha parâmetros
+					for (int i=0 ; i<identificadores.size() ; ++i)
+					{
+						simbolo *par = tab_atual->busca(identificadores[i]);
+						if (par)
+							C.push_back(param(par->endereco));
+					}
+
+					C.push_back(chpr(s.endereco));
+
+					//coloca o endereço de retorno do procedure no lugar
+					C[auxiliar.top()] = pusher(C.size()+1);
+					auxiliar.pop();
 				}
 			}
 		}
@@ -673,6 +693,8 @@ numero:
 
 bool verifica_tipos(const char *proc, const simbolo &s)
 {
+	bool ok = true;
+
 	for (int i=0 ; i<s.num_parametros ; ++i)
 	{
 		simbolo par;
@@ -682,7 +704,10 @@ bool verifica_tipos(const char *proc, const simbolo &s)
 		{
 			simbolo arg;
 			if (!tab_atual->busca(identificadores[i], arg))
+			{
 				yysinterrmsg(identificadores[i].c_str(), "nao existe");
+				ok = false;
+			}
 			else
 			{
 				if (arg.tipo != par.tipo)
@@ -700,6 +725,8 @@ bool verifica_tipos(const char *proc, const simbolo &s)
 			}
 		}
 	}
+
+	return ok;
 }
 
 void yysinterrmsg(const char* var, const char* mensagem)
