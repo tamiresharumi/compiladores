@@ -793,7 +793,7 @@ int main(void)
 #endif
 	yyparse();
 	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs+yysinterrs);
-	tabsimb.imprime();
+	//tabsimb.imprime();
 	if (SHOULD_I_GENERATE_CODE)
 	{
 		FILE* instr = fopen("instrucoes.ins", "w");
