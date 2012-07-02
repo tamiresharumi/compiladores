@@ -11,3 +11,79 @@ Conceitualmente, o compilador possui quatro etapas:
 
 Apesar de serem quatro etapas que podem estar logicamente distintas, no
 compilador desenvolvido algumas delas estão sobrepostas.
+
+A análise léxica é realizada por um programa gerado pelo comando \texttt{flex},
+a partir do arquivo fonte \texttt{main.lex}. O código gerado pelo \texttt{flex}
+é responsável por fornecer \emph{tokens} ao anaĺisador léxico e, quando
+adequado, o valor de alguns destes \emph{tokens}. Por exemplo, quando o
+analisador léxico encontra um número inteiro, com o formato \texttt{DIGITO+},
+retorna além do \emph{token} \texttt{TOKEN\_LITERAL\_INTEIRO} o valor
+convertido para um inteiro que é armazenado na variável \texttt{yylval}. Essa
+variável é criada pelo \texttt{bison}, que é responsável pela análise
+sintática.
+
+A ponte entre o analisador sintático e o analisador léxico é a função
+\texttt{yylex}, criada pelo \texttt{flex}, que retorna o token da entrada e
+realiza a conversão do valor de entrada quando necessário, por exemplo quando
+encontra um número inteiro ou um número real.
+
+A análise sintática é realizada totalmente pelo \texttt{bison}, que gera um
+analisador sintático a partir da gramática descrita no arquivo \texttt{sint.y}.
+Durante a análise sintática, não é construída nenhuma árvore de derivação ou
+outra estrutura que represente o programa, todos as etapas seguintes são
+executadas juntamente à analise sintática.
+
+A verificação de erros sintáticos é realizada com o auxílio da produção
+especial \texttt{error}, fornecida pelo próprio \texttt{bison} para realizar o
+tratamento de erros. Quando um erro é detectado, uma mensagem é emitida na
+saída padrão e em seguida tenta-se deixar o analisador sintático em um estado
+que o permita continuar a processar o arquivo e encontrar outros erros, caso
+existam.
+
+Durante a análise sintática, também é realizada a análise semântica. Nesta
+última, são verificados, entre outros:
+\begin{itemize}
+	\item o uso de variáveis não declaradas;
+	\item a tentativa de atribuição de valores para constantes;
+	\item chamadas a procedimentos não existentes;
+	\item a concordância de quantidade, número e ordem de parâmetros de
+	procedimentos;
+	\item a compatibilidade de tipos entre variáveis.
+\end{itemize}
+
+Este último item pode ser observado no trecho de código a seguir, que apresenta
+as ações semânticas associadas à regra \texttt{expressao}, nas quais são
+mostradas que o tipo de uma expressão depende do tipo de seus elementos.
+
+\begin{verbatim}
+expressao:
+        termo
+        {
+            $$ = $1;
+        }
+    |   expressao op_termo termo 
+        {
+            if ($1.tipo != $3.tipo)
+                $$ = simbolo_variavel(TIPO_FLOAT);
+            else
+                $$ = simbolo_variavel($1.tipo);
+            if (SHOULD_I_GENERATE_CODE)
+            {
+                if ($2 == TOKEN_SOMA)
+                    C.push_back("SOMA");
+                else
+                    C.push_back("SUBT");
+            }
+        }
+    ;
+\end{verbatim}
+
+A geração de código é feita também dentro das ações semânticas da gramática,
+como pode ser observado no exemplo acima. A variável global \texttt{C}
+representa o vetor de código no qual estão todas as instruções do programa
+final.
+
+Toda a compilação é realizada em apenas uma etapa, sem ser necessário ler o
+código ou o vetor de programa mais de uma vez. Mais detalhes são apresentados
+na seção~\ref{sec:decisoes}.
+
