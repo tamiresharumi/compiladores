@@ -10,6 +10,8 @@
 	int yysinterrs = 0;
 	int currpar = -1;
 	int stack_size = 0;
+	int program_stack_top = 0;
+	int estou_dentro_de_procedure = 0;
 	int yylex();
 	int yyparse();
 	void yyerror (char const *);
@@ -120,7 +122,11 @@ corpo_2:
 	|	error {yyerrok;}
 	;
 dc:
-		dcc_1 dcv_1 dcp_1
+		dcc_1 dcv_1
+		{
+			program_stack_top = stack_size;
+		}
+		dcp_1
 	;
 dcc_1:
 		dc_c
@@ -209,10 +215,16 @@ mais_var:
 	|
 	;
 dc_p:
-		PROCEDURE TOKEN_IDENTIFICADOR parametros TOKEN_PONTO_VIRGULA
+		PROCEDURE TOKEN_IDENTIFICADOR 
 		{
+			tab_atual = new tabela_simbolos(&tabsimb);
 			simbolo proc = simbolo_procedimento(tab_atual->tamanho());
 			proc.tabela = tab_atual;
+
+			//pega o stack_size máximo do programa, pra que todos
+			//os procedimentos fiquem com as variáveis declaradas no
+			//endereço certo
+			stack_size = program_stack_top;
 
 			if (!tabsimb.insere($2, proc))
 			{
@@ -227,8 +239,13 @@ dc_p:
 				mensagem += categorias[s.categoria];
 				yysinterrmsg($2, mensagem.c_str());
 			}
+
+			//separa uma posição pra colocar o desvio do começo
+			//do procedimento
+			C.push_back("");
+			auxiliar.push(C.size() - 1);
 		}
-		corpo_p
+		parametros TOKEN_PONTO_VIRGULA corpo_p
 		{
 			tab_atual = &tabsimb;
 		}
@@ -242,7 +259,6 @@ parametros:
 		{
 			identificadores.clear();
 			currpar = 0;
-			tab_atual = new tabela_simbolos(&tabsimb);
 		}
 		lista_par TOKEN_FECHA_PAR
 	|
@@ -253,8 +269,11 @@ lista_par:
 			for (int i=0 ; i<identificadores.size() ; ++i)
 			{
 				$3.ordem = currpar++;
+				$3.endereco = stack_size++;
 				if (!tab_atual->insere(identificadores[i], $3))
 					yysinterrmsg(identificadores[i].c_str(), "já foi declarada");	
+				else
+					C.push_back("COPVL");
 			}
 			identificadores.clear();
 		}
@@ -274,9 +293,7 @@ dc_loc:
 		dc_v
 	;
 lista_arg:
-		TOKEN_ABRE_PAR
-		{ identificadores.clear(); }
-		argumentos TOKEN_FECHA_PAR
+		TOKEN_ABRE_PAR argumentos TOKEN_FECHA_PAR
 	|
 	;
 argumentos:
@@ -350,8 +367,7 @@ if_statement:
 			if(SHOULD_I_GENERATE_CODE)
 			{
 				C.push_back("");
-				stack_size = C.size() - 1;
-				auxiliar.push(stack_size);
+				auxiliar.push(C.size() - 1);
 			}
 		}
 	;
@@ -387,6 +403,10 @@ other_stmt:
 			simbolo s;
 			if (!tab_atual->busca($1, s))
 				yysinterrmsg($1, "nao foi declarada.");	
+			//limpa aqui porque qualquer coisa que acontecer daqui pra
+			//frente vai precisar de uma lista de identificadores, de
+			//preferência que comece vazia
+			identificadores.clear();
 		}
 		cmd_linha 
 		{
@@ -672,6 +692,6 @@ int main(void)
 	yyparse();
 	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs+yysinterrs);
 	tabsimb.imprime();
-	for (int i=0;i<C.size();i++)
-		printf("%s\n", C[i].c_str());
+	//for (int i=0;i<C.size();i++)
+	//	printf("%s\n", C[i].c_str());
 }
