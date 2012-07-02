@@ -218,13 +218,23 @@ dc_p:
 		PROCEDURE TOKEN_IDENTIFICADOR 
 		{
 			tab_atual = new tabela_simbolos(&tabsimb);
-			simbolo proc = simbolo_procedimento(tab_atual->tamanho());
-			proc.tabela = tab_atual;
+
+			estou_dentro_de_procedure = 1;
 
 			//pega o stack_size máximo do programa, pra que todos
 			//os procedimentos fiquem com as variáveis declaradas no
 			//endereço certo
 			stack_size = program_stack_top;
+
+			//separa uma posição pra colocar o desvio do começo
+			//do procedimento
+			C.push_back("");
+			auxiliar.push(C.size() - 1);
+		}
+		parametros
+		{
+			simbolo proc = simbolo_procedimento(tab_atual->tamanho());
+			proc.tabela = tab_atual;
 
 			if (!tabsimb.insere($2, proc))
 			{
@@ -239,15 +249,25 @@ dc_p:
 				mensagem += categorias[s.categoria];
 				yysinterrmsg($2, mensagem.c_str());
 			}
-
-			//separa uma posição pra colocar o desvio do começo
-			//do procedimento
-			C.push_back("");
-			auxiliar.push(C.size() - 1);
 		}
-		parametros TOKEN_PONTO_VIRGULA corpo_p
+		TOKEN_PONTO_VIRGULA corpo_p
 		{
+			//volta a tabela de símbolos pra global pra não fazer errado..
 			tab_atual = &tabsimb;
+			
+			//desaloca memória e retorna pra onde deveria
+			simbolo *s = tabsimb.busca($2);
+			if (s)
+			{
+				C.push_back(desm(s->tabela->tamanho()));
+				C.push_back("RTPR");
+			}
+
+			//coloca a instrução de desvio no começo do procedure
+			C[auxiliar.top()] = dsvi(C.size()+1);
+			auxiliar.pop();
+
+			estou_dentro_de_procedure = 0;
 		}
 		dcp_1
 	|	PROCEDURE error TOKEN_PONTO_VIRGULA {yyerrok;}
@@ -456,6 +476,9 @@ cmd_linha: /* ou uma atribuição comum ou chamada de procedimento */
 		}
 	|	lista_arg
 		{
+			if (estou_dentro_de_procedure)
+				genericerrmsg("nao é permitido chamar procedures de dentro de procedures");
+
 			const char *proc = $<texto>-1;
 			simbolo s;
 			//procedimentos só podem estar declarados na tabela global, então bora lá
@@ -692,6 +715,6 @@ int main(void)
 	yyparse();
 	fprintf(stdout, "Analise do codigo terminada.\nHouveram %d erros reportados\n", yynerrs+yylexerrs+yysinterrs);
 	tabsimb.imprime();
-	//for (int i=0;i<C.size();i++)
-	//	printf("%s\n", C[i].c_str());
+	for (int i=0;i<C.size();i++)
+		printf("%3i: %s\n", i+1, C[i].c_str());
 }

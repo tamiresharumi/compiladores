@@ -31,10 +31,19 @@ std::string dsvf(int endereco)
 	retorno << "DSVF " << endereco;
 	return retorno.str();
 }
+
 std::string dsvi(int endereco)
 {
  	std::stringstream retorno;
-  	retorno << "DSVF " << endereco;
+  	retorno << "DSVI " << endereco;
    	return retorno.str();
 }
+
+std::string desm(int n)
+{
+	std::stringstream retorno;
+	retorno << "DESM " << n;
+	return retorno.str();
+}
+
 #endif
